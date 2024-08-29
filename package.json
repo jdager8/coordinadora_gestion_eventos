@@ -1,0 +1,25 @@
+{
+  "name": "coordinadora_gestion_eventos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/jwt": "^8.0.1",
+    "@fastify/postgres": "^5.2.2",
+    "fastify": "^4.28.1",
+    "pg": "^8.12.0",
+    "postgrator": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.1",
+    "@types/pg": "^8.11.8",
+    "typescript": "^5.5.4"
+  }
+}
