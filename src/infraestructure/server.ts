@@ -1,11 +1,10 @@
-import fastify, { FastifyInstance } from "fastify";
+import fastify, { FastifyInstance } from 'fastify';
 
-import PostgresDatabase from "./database/postgres.db";
-
+import PostgresDatabase from './database/postgres.db';
 class App {
   public server: FastifyInstance;
   private port: number = 8080;
-  private host: string = "localhost";
+  private host: string = 'localhost';
 
   constructor() {
     this.server = fastify();
@@ -13,7 +12,13 @@ class App {
   }
 
   connectDatabase(): void {
-    new PostgresDatabase();
+    try {
+      const db = PostgresDatabase.getInstance();
+      db.executeQuery('SELECT * FROM users');
+    } catch (error) {
+      console.error(error);
+      process.exit(1);
+    }
   }
 
   register(plugins: { forEach: (arg0: (routes: any) => void) => void }): void {
@@ -30,7 +35,8 @@ class App {
   }
 
   listen(): void {
-    this.server.listen({ port: this.port }, (err, address) => {
+    console.log(`Server running at http://${this.host}:${this.port}`);
+    this.server.listen({ port: this.port }, (err, _address) => {
       if (err) {
         console.error(err);
         process.exit(1);
