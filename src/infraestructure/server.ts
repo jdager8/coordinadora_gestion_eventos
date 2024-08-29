@@ -1,6 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 
-import PostgresDatabase from './database/postgres.db';
+import PostgresDatabase from './database/postgres.db.js';
 class App {
   public server: FastifyInstance;
   private port: number = 8080;
@@ -8,13 +8,13 @@ class App {
 
   constructor() {
     this.server = fastify();
-    this.connectDatabase();
+    this.runMigrations();
   }
 
-  connectDatabase(): void {
+  runMigrations(): void {
     try {
       const db = PostgresDatabase.getInstance();
-      db.executeQuery('SELECT * FROM users');
+      db.migrate();
     } catch (error) {
       console.error(error);
       process.exit(1);

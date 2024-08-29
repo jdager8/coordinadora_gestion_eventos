@@ -1,5 +1,5 @@
 import path from 'path';
-import { Pool, PoolClient } from 'pg';
+import { Pool, PoolClient, QueryResult } from 'pg';
 
 /**
  * Represents a connection to a PostgreSQL database.
@@ -15,7 +15,7 @@ class PostgresDatabase {
       password: 'postgres',
       host: '127.0.0.1',
       port: 5432,
-      database: 'insurance',
+      database: 'gestion_eventos',
       connectionTimeoutMillis: 1000,
     });
   }
@@ -27,14 +27,13 @@ class PostgresDatabase {
     return PostgresDatabase.instance;
   }
 
-  async executeQuery(query: string, params: any[] = []): Promise<any> {
+  async executeQuery(query: string, params: any[] = []): Promise<QueryResult> {
     let client: PoolClient | null = null;
 
     try {
       client = await this.pool.connect();
       const result = await client.query(query, params);
-      console.log(JSON.stringify(result.rows));
-      return result.rows;
+      return result;
     } catch (error) {
       throw new Error(`Error executing query: ${error}`);
     } finally {
@@ -57,6 +56,7 @@ class PostgresDatabase {
 
       await client.query('COMMIT');
     } catch (error) {
+      console.error(`Error executing transaction: ${error}`);
       await client?.query('ROLLBACK');
       throw new Error(`Error executing transaction: ${error}`);
     } finally {
@@ -68,16 +68,15 @@ class PostgresDatabase {
 
   async migrate(): Promise<void> {
     try {
-      const { default: Postgrator } = await import('postgrator');
+      const postgrator = (await import('postgrator')).default;
 
-      const runner = new Postgrator({
+      const runner = new postgrator({
         migrationPattern: path.join(__dirname, './migrations/*'),
         driver: 'pg',
-        database: 'your_database_name',
         schemaTable: 'migrations',
         currentSchema: 'public',
-        execQuery: async (query) => {
-          return await this.executeQuery(query);
+        execQuery: async (query): Promise<any> => {
+          if (query) return await this.executeQuery(query);
         },
       });
 
