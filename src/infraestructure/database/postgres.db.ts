@@ -1,5 +1,6 @@
 import path from 'path';
 import { Pool, PoolClient, QueryResult } from 'pg';
+import { DatabaseConfig } from './types';
 
 /**
  * Represents a connection to a PostgreSQL database.
@@ -9,20 +10,20 @@ class PostgresDatabase {
 
   private static instance: PostgresDatabase;
 
-  private constructor() {
+  private constructor(config: DatabaseConfig) {
     this.pool = new Pool({
-      user: 'postgres',
-      password: 'postgres',
-      host: '127.0.0.1',
-      port: 5432,
-      database: 'gestion_eventos',
+      user: config.EM_DB_USER,
+      password: config.EM_DB_PASSWORD,
+      host: config.EM_DB_HOST,
+      port: config.EM_DB_PORT,
+      database: config.EM_DB_NAME,
       connectionTimeoutMillis: 1000,
     });
   }
 
-  public static getInstance(): PostgresDatabase {
+  public static getInstance(config: DatabaseConfig): PostgresDatabase {
     if (!PostgresDatabase.instance) {
-      PostgresDatabase.instance = new PostgresDatabase();
+      PostgresDatabase.instance = new PostgresDatabase(config);
     }
     return PostgresDatabase.instance;
   }
@@ -35,7 +36,8 @@ class PostgresDatabase {
       const result = await client.query(query, params);
       return result;
     } catch (error) {
-      throw new Error(`Error executing query: ${error}`);
+      console.error(`Error executing query: ${error}`);
+      throw new Error(`Error executing query`);
     } finally {
       if (client) {
         client.release();
@@ -58,7 +60,7 @@ class PostgresDatabase {
     } catch (error) {
       console.error(`Error executing transaction: ${error}`);
       await client?.query('ROLLBACK');
-      throw new Error(`Error executing transaction: ${error}`);
+      throw new Error(`Error executing transaction`);
     } finally {
       if (client) {
         client.release();
@@ -66,15 +68,15 @@ class PostgresDatabase {
     }
   }
 
-  async migrate(): Promise<void> {
+  async migrate(config: DatabaseConfig): Promise<void> {
     try {
       const postgrator = (await import('postgrator')).default;
 
       const runner = new postgrator({
-        migrationPattern: path.join(__dirname, './migrations/*'),
-        driver: 'pg',
-        schemaTable: 'migrations',
-        currentSchema: 'public',
+        migrationPattern: path.join(__dirname, config.EM_DB_MIGRATIONS_FOLDER),
+        driver: config.EM_DB_DRIVER,
+        schemaTable: config.EM_DB_MIGRATIONS_TABLE,
+        currentSchema: config.EM_DB_SCHEMA,
         execQuery: async (query): Promise<any> => {
           if (query) return await this.executeQuery(query);
         },
@@ -82,7 +84,8 @@ class PostgresDatabase {
 
       await runner.migrate();
     } catch (error) {
-      throw new Error(`Error migrating database: ${error}`);
+      console.error(`Error migrating database: ${error}`);
+      throw new Error(`Error migrating database`);
     }
   }
 

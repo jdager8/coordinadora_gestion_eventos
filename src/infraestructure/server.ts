@@ -7,24 +7,43 @@ class App {
   private host: string = 'localhost';
 
   constructor() {
-    this.server = fastify();
+    this.server = fastify({
+      logger: {
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            translateTime: 'HH:MM:ss',
+            colorize: true,
+            ignore: 'pid',
+          },
+        },
+      },
+    });
+  }
+
+  async init(config: { readonly [x: symbol]: any }): Promise<void> {
+    await this.register(config[Symbol.for('plugins')]);
     this.runMigrations();
+    this.listen();
   }
 
   runMigrations(): void {
     try {
-      const db = PostgresDatabase.getInstance();
-      db.migrate();
+      const db = PostgresDatabase.getInstance(this.server.config);
+      db.migrate(this.server.config);
     } catch (error) {
       console.error(error);
       process.exit(1);
     }
   }
 
-  register(plugins: { forEach: (arg0: (routes: any) => void) => void }): void {
-    plugins.forEach((plugin) => {
-      this.server.register(plugin);
+  async register(plugins: {
+    forEach: (arg0: (routes: any) => void) => void;
+  }): Promise<void> {
+    plugins.forEach(async (plugin) => {
+      await this.server.register(plugin);
     });
+    await this.server.ready();
   }
 
   routes(routes: { forEach: (arg0: (routes: any) => void) => void }): void {
@@ -35,10 +54,9 @@ class App {
   }
 
   listen(): void {
-    console.log(`Server running at http://${this.host}:${this.port}`);
     this.server.listen({ port: this.port }, (err, _address) => {
       if (err) {
-        console.error(err);
+        this.server.log.error(err);
         process.exit(1);
       }
     });
