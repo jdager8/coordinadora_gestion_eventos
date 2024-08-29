@@ -1,6 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 
-import PostgresDatabase from './database/postgres.db.js';
+import PostgresDatabase from './database/postgres/postgres.db';
 class App {
   public server: FastifyInstance;
   private port: number = 8080;
@@ -22,16 +22,25 @@ class App {
   }
 
   async init(config: { readonly [x: symbol]: any }): Promise<void> {
-    await this.register(config[Symbol.for('plugins')]);
-    this.runMigrations();
-    this.listen();
+    try {
+      await this.register(config[Symbol.for('plugins')]);
+      this.routes(config[Symbol.for('routes')]);
+      this.runMigrations();
+      this.listen();
+    } catch (error) {
+      this.server.log.error('Error initializing app');
+      console.error(error);
+      process.exit(1);
+    }
   }
 
   runMigrations(): void {
     try {
+      this.server.log.info('Running migrations');
       const db = PostgresDatabase.getInstance(this.server.config);
       db.migrate(this.server.config);
     } catch (error) {
+      this.server.log.error('Error running migrations');
       console.error(error);
       process.exit(1);
     }
@@ -43,13 +52,16 @@ class App {
     plugins.forEach(async (plugin) => {
       await this.server.register(plugin);
     });
-    await this.server.ready();
+    await this.server.after();
   }
 
   routes(routes: { forEach: (arg0: (routes: any) => void) => void }): void {
-    routes.forEach((route) => {
+    routes.forEach(async (route) => {
       const router = new route();
-      this.server.register(router.router, { prefix: router.prefix_route });
+
+      await this.server.register(router.routes, {
+        prefix: router.prefix_route,
+      });
     });
   }
 

@@ -7,6 +7,7 @@ import { DatabaseConfig } from './types';
  */
 class PostgresDatabase {
   private pool: Pool;
+  private transaction: PoolClient | null = null;
 
   private static instance: PostgresDatabase;
 
@@ -32,11 +33,12 @@ class PostgresDatabase {
     let client: PoolClient | null = null;
 
     try {
+      if (this.transaction) return await this.transaction.query(query, params);
       client = await this.pool.connect();
-      const result = await client.query(query, params);
-      return result;
+      return await client.query(query, params);
     } catch (error) {
       console.error(`Error executing query: ${error}`);
+      console.error(`Query: ${query}`);
       throw new Error(`Error executing query`);
     } finally {
       if (client) {
@@ -45,26 +47,25 @@ class PostgresDatabase {
     }
   }
 
-  async executeTransaction(queries: string[]): Promise<void> {
-    let client: PoolClient | null = null;
+  async beginTransaction(): Promise<void> {
+    const client = await this.pool.connect();
+    await client.query('BEGIN');
+    this.transaction = client;
+  }
 
-    try {
-      client = await this.pool.connect();
-      await client.query('BEGIN');
+  async commitTransaction(): Promise<void> {
+    if (this.transaction) {
+      await this.transaction.query('COMMIT');
+      this.transaction.release();
+      this.transaction = null;
+    }
+  }
 
-      for (const query of queries) {
-        await client.query(query);
-      }
-
-      await client.query('COMMIT');
-    } catch (error) {
-      console.error(`Error executing transaction: ${error}`);
-      await client?.query('ROLLBACK');
-      throw new Error(`Error executing transaction`);
-    } finally {
-      if (client) {
-        client.release();
-      }
+  async rollbackTransaction(): Promise<void> {
+    if (this.transaction) {
+      await this.transaction.query('ROLLBACK');
+      this.transaction.release();
+      this.transaction = null;
     }
   }
 

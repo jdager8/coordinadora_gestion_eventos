@@ -10,7 +10,7 @@
     "moduleResolution": "NodeNext",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
   },
   "include": ["src/**/*.ts", "index.ts"],
   "exclude": ["node_modules"],
