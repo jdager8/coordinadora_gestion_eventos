@@ -1,7 +1,7 @@
-import UserRepository from '@/infraestructure/repositories/user.repository';
+import UserRepository from '../../infraestructure/repositories/user.repository';
 
-import { LoginDTO, RegisterDTO } from '@/domain/entities/dto/auth.dto';
-import { UserDTO } from '@/domain/entities/dto/user.dto';
+import { LoginDTO, RegisterDTO } from '../../domain/entities/dto/auth.dto';
+import { UserDTO } from '../../domain/entities/dto/user.dto';
 
 class AuthUseCase {
   private userRepository: UserRepository;

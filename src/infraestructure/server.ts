@@ -1,6 +1,6 @@
 import fastify, { FastifyInstance } from 'fastify';
 
-import PostgresDatabase from '@/infraestructure/database/postgres/postgres.db';
+import PostgresDatabase from './database/postgres/postgres.db';
 class App {
   public server: FastifyInstance;
   private port: number = 8080;

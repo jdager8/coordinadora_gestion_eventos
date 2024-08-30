@@ -1,9 +1,9 @@
-import PostgresDatabase from '@/infraestructure/database/postgres/postgres.db';
+import PostgresDatabase from '../database/postgres/postgres.db';
 
-import { UserDTO } from '@/domain/entities/dto/user.dto';
-import { RegisterDTO } from '@/domain/entities/dto/auth.dto';
-import { DatabaseConfig } from '@/infraestructure/database/postgres/types';
-import PasswordHash from '@/helpers/passwordHash';
+import { UserDTO } from '../../domain/entities/dto/user.dto';
+import { RegisterDTO } from '../../domain/entities/dto/auth.dto';
+import { DatabaseConfig } from '../database/postgres/types';
+import PasswordHash from '../../helpers/passwordHash';
 
 class UserRepository {
   private static instance: UserRepository;
@@ -68,6 +68,18 @@ class UserRepository {
     } else {
       throw new Error('Error creating user');
     }
+  }
+
+  async findByUsername(username: string): Promise<UserDTO> {
+    // 1. Find the user by username
+    const user = await this.db.executeQuery(
+      'SELECT * FROM users u JOIN persons p ON u.id_persons = p.id JOIN roles r ON u.id_roles = r.id  WHERE username = $1',
+      [username],
+    );
+
+    //
+
+    throw new Error('Method not implemented.');
   }
 }
 
