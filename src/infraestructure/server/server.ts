@@ -2,6 +2,7 @@ import fastify, { FastifyInstance } from 'fastify';
 
 import PostgresDatabase from '../database/postgres/postgres.db';
 import { errorHandler } from './error.handler';
+import ResponseParserPlugin from './response.handler';
 class App {
   public server: FastifyInstance;
   private port: number = 8080;
@@ -27,6 +28,7 @@ class App {
       await this.register(config[Symbol.for('plugins')]);
       this.routes(config[Symbol.for('routes')]);
       this.setErrorHandler();
+      await this.setResponseHandler();
       this.runMigrations();
       this.listen();
     } catch (error) {
@@ -65,6 +67,10 @@ class App {
         prefix: router.prefix_route,
       });
     });
+  }
+
+  async setResponseHandler(): Promise<void> {
+    await this.register([ResponseParserPlugin]);
   }
 
   setErrorHandler(): void {
