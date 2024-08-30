@@ -1,9 +1,9 @@
-import PostgresDatabase from '../database/postgres/postgres.db';
+import PostgresDatabase from '@/infraestructure/database/postgres/postgres.db';
 
-import { UserDTO } from '../../domain/entities/dto/user.dto';
-import { RegisterDTO } from '../../domain/entities/dto/auth.dto';
-import { DatabaseConfig } from '../database/postgres/types';
-import PasswordHash from '../../helpers/passwordHash';
+import { UserDTO } from '@/domain/entities/dto/user.dto';
+import { RegisterDTO } from '@/domain/entities/dto/auth.dto';
+import { DatabaseConfig } from '@/infraestructure/database/postgres/types';
+import PasswordHash from '@/helpers/passwordHash';
 
 class UserRepository {
   private static instance: UserRepository;

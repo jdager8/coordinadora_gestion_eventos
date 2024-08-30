@@ -1,10 +1,10 @@
-import App from './src/infraestructure/server';
+import App from '@/infraestructure/server';
 
-import AuthRoutes from './src/adapters/routes/auth.routes';
-import EventRoutes from './src/adapters/routes/events.routes';
+import AuthRoutes from '@/adapters/routes/auth.routes';
+import EventRoutes from '@/adapters/routes/events.routes';
 
-import SwaggerPlugin from './src/infraestructure/plugins/swagger.plugin';
-import EnvPlugin from './src/infraestructure/plugins/env.plugin';
+import SwaggerPlugin from '@/infraestructure/plugins/swagger.plugin';
+import EnvPlugin from '@/infraestructure/plugins/env.plugin';
 
 const app = new App();
 

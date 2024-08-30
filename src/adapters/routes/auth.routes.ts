@@ -1,7 +1,9 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import AuthUseCase from '../../application/use_cases/auth.usecase';
-import { RegisterDTO } from '../../domain/entities/dto/auth.dto';
-import { UserDTO } from '../../domain/entities/dto/user.dto';
+
+import AuthUseCase from '@/application/use_cases/auth.usecase';
+
+import { RegisterDTO } from '@/domain/entities/dto/auth.dto';
+import { UserDTO } from '@/domain/entities/dto/user.dto';
 
 class AuthRoutes {
   public prefix_route = '/auth';
