@@ -24,6 +24,7 @@ function errorHandler(
   };
 
   if (error.validation) {
+    console.log(error.validation);
     errorResponse.statusCode = 400;
     errorResponse.message = error.validation.map((e) => e.message).join(', ');
     return reply.code(400).send(errorResponse);

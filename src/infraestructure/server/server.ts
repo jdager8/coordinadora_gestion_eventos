@@ -20,6 +20,12 @@ class App {
           },
         },
       },
+      ajv: {
+        customOptions: {
+          allErrors: true,
+        },
+        plugins: [require('ajv-errors')],
+      },
     });
   }
 

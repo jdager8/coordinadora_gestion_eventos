@@ -5,6 +5,7 @@ import {
   FastifyRequest,
 } from 'fastify';
 import fastifyPlugin from 'fastify-plugin';
+import { ResponseInterface } from '../../domain/interfaces/response.interface';
 
 function responseParserPlugin(
   instance: FastifyInstance,
@@ -13,14 +14,16 @@ function responseParserPlugin(
 ) {
   instance.addHook(
     'preSerialization',
-    (_request: FastifyRequest, reply: FastifyReply, payload, done) => {
-      if (reply.statusCode === 200 || reply.statusCode === 201) {
+    (request: FastifyRequest, reply: FastifyReply, payload, done) => {
+      if (request.url.includes('docs')) {
+        done(null, payload);
+      } else if (reply.statusCode === 200 || reply.statusCode === 201) {
         const statusCode = reply.statusCode;
         const message = 'Success';
         const data = payload;
         const error = statusCode >= 400;
 
-        const formattedResponse = {
+        const formattedResponse: ResponseInterface = {
           statusCode,
           message,
           data,

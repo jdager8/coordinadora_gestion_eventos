@@ -22,6 +22,12 @@ function fastifySwaggerPlugin(
             description: 'Development server',
           },
         ],
+        tags: [
+          { name: 'auth', description: 'Auth routes' },
+          { name: 'events', description: 'Events routes' },
+          { name: 'users', description: 'Users routes' },
+          { name: 'reports', description: 'Reports routes' },
+        ],
       },
     })
     .ready((err) => {
@@ -29,10 +35,14 @@ function fastifySwaggerPlugin(
       instance.log.info('Swagger loaded');
     });
 
-  instance.register(fastifySwaggerUi).ready((err) => {
-    if (err) console.error(err);
-    instance.log.info('Swagger UI loaded');
-  });
+  instance
+    .register(fastifySwaggerUi, {
+      routePrefix: '/docs',
+    })
+    .ready((err) => {
+      if (err) console.error(err);
+      instance.log.info('Swagger UI loaded');
+    });
 
   done();
 }

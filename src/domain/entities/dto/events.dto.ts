@@ -7,6 +7,11 @@ interface EventDTO {
   endDate: Date;
   capacity: number;
   registeredCount: number;
+  eventType: Partial<EventTypeDTO>;
+  eventTypeId?: number;
+  eventSchedule: Partial<EventScheduleDTO>[];
+  eventNearPlaces: Partial<EventNearPlacesDTO>[];
+  createdBy?: number | string;
 }
 
 interface EventTypeDTO {
@@ -17,8 +22,7 @@ interface EventTypeDTO {
 interface EventScheduleDTO {
   id?: number;
   eventId: number;
-  startDate: Date;
-  endDate: Date;
+  date: Date;
 }
 
 interface EventNearPlacesDTO {
@@ -26,7 +30,10 @@ interface EventNearPlacesDTO {
   eventId: number;
   name: string;
   address: string;
-  coordinates: string;
+  coordinates: {
+    latitude: string;
+    longitude: string;
+  };
 }
 
 interface CreateEventDTO extends Omit<EventDTO, 'id'> {}

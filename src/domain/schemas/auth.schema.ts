@@ -1,6 +1,7 @@
 import { responseSchema } from './base.schema';
 
 const loginSchema = {
+  tags: ['auth'],
   body: {
     type: 'object',
     required: ['username', 'password'],
@@ -23,6 +24,7 @@ const loginSchema = {
 };
 
 const registerSchema = {
+  tags: ['auth'],
   body: {
     type: 'object',
     required: ['username', 'password', 'roleId', 'person'],

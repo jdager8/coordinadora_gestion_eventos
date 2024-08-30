@@ -15,6 +15,7 @@ declare module 'fastify' {
       EM_DB_MIGRATIONS_TABLE: string;
       EM_DB_MIGRATIONS_FOLDER: string;
       EM_JWT_SECRET: string;
+      EM_JWT_EXPIRES_IN: string;
     };
   }
 }
@@ -36,6 +37,8 @@ function fastifyEnvPlugin(
       'EM_DB_SCHEMA',
       'EM_DB_MIGRATIONS_TABLE',
       'EM_DB_MIGRATIONS_FOLDER',
+      'EM_JWT_SECRET',
+      'EM_JWT_EXPIRES_IN',
     ],
     properties: {
       EM_DB_HOST: {
@@ -66,6 +69,9 @@ function fastifyEnvPlugin(
         type: 'string',
       },
       EM_JWT_SECRET: {
+        type: 'string',
+      },
+      EM_JWT_EXPIRES_IN: {
         type: 'string',
       },
     },

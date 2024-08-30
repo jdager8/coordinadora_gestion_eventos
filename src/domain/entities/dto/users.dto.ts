@@ -1,10 +1,11 @@
 import { PersonDTO } from './persons.dto';
+import { RoleDTO } from './roles.dto';
 
 interface UserDTO {
   id: number;
   username: string;
-  email: string;
   password?: string;
+  role: RoleDTO;
   person: PersonDTO;
 }
 
