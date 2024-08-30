@@ -28,7 +28,11 @@ class UserRepository {
     try {
       // 1. Create a new person
       person = await this.db.executeQuery(
-        'INSERT INTO persons (firstname, lastname, email, id_number) VALUES ($1, $2, $3, $4) RETURNING id',
+        `INSERT INTO
+          persons (firstname, lastname, email, id_number)
+         VALUES
+          ($1, $2, $3, $4)
+         RETURNING id`,
         [
           user.person.firstName,
           user.person.lastName,
@@ -41,7 +45,11 @@ class UserRepository {
       const hashedPassword = await PasswordHash.hash(user.password);
 
       newUser = await this.db.executeQuery(
-        'INSERT INTO users (username, password, id_persons, id_roles) VALUES ($1, $2, $3, $4) RETURNING id',
+        `INSERT INTO
+          users (username, password, id_persons, id_roles)
+         VALUES
+          ($1, $2, $3, $4)
+         RETURNING id`,
         [user.username, hashedPassword, person.rows[0].id, user.roleId],
       );
 
@@ -57,6 +65,7 @@ class UserRepository {
         id: newUser.rows[0].id,
         username: user.username,
         email: user.person.email,
+        roleId: user.roleId,
         person: {
           id: person.rows[0].id,
           firstName: user.person.firstName,
@@ -73,13 +82,35 @@ class UserRepository {
   async findByUsername(username: string): Promise<UserDTO> {
     // 1. Find the user by username
     const user = await this.db.executeQuery(
-      'SELECT * FROM users u JOIN persons p ON u.id_persons = p.id JOIN roles r ON u.id_roles = r.id  WHERE username = $1',
+      `SELECT
+        *
+       FROM
+        users u
+        JOIN persons p ON u.id_persons = p.id
+        JOIN roles r ON u.id_roles = r.id
+      WHERE username = $1`,
       [username],
     );
 
-    //
-
-    throw new Error('Method not implemented.');
+    // 2. Return the user
+    if (user.rows.length > 0) {
+      return {
+        id: user.rows[0].id,
+        username: user.rows[0].username,
+        password: user.rows[0].password,
+        email: user.rows[0].email,
+        roleId: user.rows[0].id_roles,
+        person: {
+          id: user.rows[0].id_persons,
+          firstName: user.rows[0].firstname,
+          lastName: user.rows[0].lastname,
+          email: user.rows[0].email,
+          idNumber: user.rows[0].id_number,
+        },
+      } as UserDTO;
+    } else {
+      throw new Error('User not found');
+    }
   }
 }
 
