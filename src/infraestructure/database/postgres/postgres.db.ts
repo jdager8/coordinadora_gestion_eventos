@@ -1,6 +1,15 @@
 import path from 'path';
 import { Pool, PoolClient, QueryResult } from 'pg';
 import { DatabaseConfig } from './types';
+import {
+  DuplicateException,
+  ForeignKeyConstraintException,
+} from '../../../application/exceptions/exceptions';
+
+const DATABASE_ERROR = {
+  DUPLICATE_KEY: 'The record already exists',
+  FOREIGN_KEY_CONSTRAINT: 'The record has associated records',
+};
 
 /**
  * Represents a connection to a PostgreSQL database.
@@ -36,7 +45,15 @@ class PostgresDatabase {
       if (this.transaction) return await this.transaction.query(query, params);
       client = await this.pool.connect();
       return await client.query(query, params);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === '23505') {
+        throw new DuplicateException(DATABASE_ERROR.DUPLICATE_KEY);
+      }
+      if (error.code === '23503') {
+        throw new ForeignKeyConstraintException(
+          DATABASE_ERROR.FOREIGN_KEY_CONSTRAINT,
+        );
+      }
       console.error(`Error executing query: ${error}`);
       console.error(`Query: ${query}`);
       throw new Error(`Error executing query`);

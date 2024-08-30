@@ -1,3 +1,5 @@
+import { responseSchema } from './base.schema';
+
 const loginSchema = {
   body: {
     type: 'object',
@@ -8,24 +10,15 @@ const loginSchema = {
     },
   },
   response: {
-    200: {
+    200: responseSchema(200, null, {
       type: 'object',
       properties: {
         token: { type: 'string' },
       },
-    },
-    400: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' },
-      },
-    },
-    500: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' },
-      },
-    },
+    }),
+    400: responseSchema(400, true),
+    404: responseSchema(404, true),
+    500: responseSchema(500, true),
   },
 };
 
@@ -50,17 +43,22 @@ const registerSchema = {
     },
   },
   response: {
-    201: {
+    201: responseSchema(201, null, {
       type: 'object',
       properties: {
-        id: { type: 'number' },
+        id: { type: 'number', default: 1 },
         username: { type: 'string' },
-        email: { type: 'string' },
-        roleId: { type: 'number' },
+        role: {
+          type: 'object',
+          properties: {
+            id: { type: 'number', default: 1 },
+            role: { type: 'string' },
+          },
+        },
         person: {
           type: 'object',
           properties: {
-            id: { type: 'number' },
+            id: { type: 'number', default: 1 },
             firstName: { type: 'string' },
             lastName: { type: 'string' },
             email: { type: 'string' },
@@ -68,19 +66,10 @@ const registerSchema = {
           },
         },
       },
-    },
-    400: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' },
-      },
-    },
-    500: {
-      type: 'object',
-      properties: {
-        message: { type: 'string' },
-      },
-    },
+    }),
+    400: responseSchema(400, true),
+    404: responseSchema(404, true),
+    500: responseSchema(500, true),
   },
 };
 

@@ -26,9 +26,25 @@ class ForbiddenException extends Error {
   }
 }
 
+class DuplicateException extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'DuplicateException';
+  }
+}
+
+class ForeignKeyConstraintException extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'ForeignKeyConstraintException';
+  }
+}
+
 export {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
   ForbiddenException,
+  DuplicateException,
+  ForeignKeyConstraintException,
 };

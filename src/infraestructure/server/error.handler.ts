@@ -1,14 +1,14 @@
-import {
-  FastifyError,
-  FastifyInstance,
-  FastifyReply,
-  FastifyRequest,
-} from 'fastify';
+import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
+
+import { ResponseInterface } from '../../domain/interfaces/response.interface';
+
 import {
   NotFoundException,
   BadRequestException,
   UnauthorizedException,
   ForbiddenException,
+  ForeignKeyConstraintException,
+  DuplicateException,
 } from '../../application/exceptions/exceptions';
 
 function errorHandler(
@@ -16,12 +16,18 @@ function errorHandler(
   _request: FastifyRequest,
   reply: FastifyReply,
 ): FastifyReply {
-  let errorResponse = {
+  let errorResponse: ResponseInterface = {
     error: true,
     data: null,
     message: error.message,
     statusCode: 500,
   };
+
+  if (error.validation) {
+    errorResponse.statusCode = 400;
+    errorResponse.message = error.validation.map((e) => e.message).join(', ');
+    return reply.code(400).send(errorResponse);
+  }
 
   if (error instanceof NotFoundException) {
     errorResponse.statusCode = 404;
@@ -29,7 +35,11 @@ function errorHandler(
     return reply.code(404).send(errorResponse);
   }
 
-  if (error instanceof BadRequestException) {
+  if (
+    error instanceof BadRequestException ||
+    error instanceof ForeignKeyConstraintException ||
+    error instanceof DuplicateException
+  ) {
     errorResponse.statusCode = 400;
     return reply.code(400).send(errorResponse);
   }
