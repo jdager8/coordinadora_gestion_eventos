@@ -19,7 +19,7 @@ function fastifyJwtPlugin(
   done: Function,
 ) {
   instance.register(fastifyJwt, {
-    secret: 'supersecret',
+    secret: instance.config.EM_JWT_SECRET,
   });
 
   instance.decorate(

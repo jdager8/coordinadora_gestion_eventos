@@ -1,6 +1,7 @@
 import fastify, { FastifyInstance } from 'fastify';
 
-import PostgresDatabase from './database/postgres/postgres.db';
+import PostgresDatabase from '../database/postgres/postgres.db';
+import { errorHandler } from './error.handler';
 class App {
   public server: FastifyInstance;
   private port: number = 8080;
@@ -25,6 +26,7 @@ class App {
     try {
       await this.register(config[Symbol.for('plugins')]);
       this.routes(config[Symbol.for('routes')]);
+      this.setErrorHandler();
       this.runMigrations();
       this.listen();
     } catch (error) {
@@ -63,6 +65,10 @@ class App {
         prefix: router.prefix_route,
       });
     });
+  }
+
+  setErrorHandler(): void {
+    this.server.setErrorHandler(errorHandler);
   }
 
   listen(): void {

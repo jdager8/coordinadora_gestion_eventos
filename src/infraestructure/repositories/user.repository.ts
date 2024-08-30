@@ -4,6 +4,10 @@ import { UserDTO } from '../../domain/entities/dto/user.dto';
 import { RegisterDTO } from '../../domain/entities/dto/auth.dto';
 import { DatabaseConfig } from '../database/postgres/types';
 import PasswordHash from '../../helpers/passwordHash';
+import {
+  BadRequestException,
+  NotFoundException,
+} from '../../application/exceptions/exceptions';
 
 class UserRepository {
   private static instance: UserRepository;
@@ -54,9 +58,9 @@ class UserRepository {
       );
 
       await this.db.commitTransaction();
-    } catch (error) {
+    } catch (error: any) {
       await this.db.rollbackTransaction();
-      throw new Error('Error creating user');
+      throw new BadRequestException(`Error creating user: ${error.message}`);
     }
 
     // 3. Return the new user
@@ -75,7 +79,7 @@ class UserRepository {
         },
       } as UserDTO;
     } else {
-      throw new Error('Error creating user');
+      throw new BadRequestException('Error creating user');
     }
   }
 
@@ -109,7 +113,7 @@ class UserRepository {
         },
       } as UserDTO;
     } else {
-      throw new Error('User not found');
+      throw new NotFoundException(`User not found: ${username}`);
     }
   }
 }
