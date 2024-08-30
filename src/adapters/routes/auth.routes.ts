@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 import AuthUseCase from '../../application/use_cases/auth.usecase';
 import { RegisterDTO } from '../../domain/entities/dto/auth.dto';
+import { UserDTO } from '../../domain/entities/dto/user.dto';
 
 class AuthRoutes {
   public prefix_route = '/auth';
@@ -16,10 +17,14 @@ class AuthRoutes {
       reply.send('Login');
     });
 
-    instance.post('/register', {}, async (request, reply) => {
-      const response = await authUseCase.register(request.body as RegisterDTO);
-      reply.send(response);
-    });
+    instance.post<{ Body: RegisterDTO; Reply: UserDTO }>(
+      '/register',
+      {},
+      async (request, reply) => {
+        const response = await authUseCase.register(request.body);
+        reply.send(response);
+      },
+    );
 
     done();
   }
