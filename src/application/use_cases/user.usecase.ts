@@ -21,6 +21,10 @@ class UserUseCase {
     return this.instance;
   }
 
+  async findAll(): Promise<UserDTO[]> {
+    return this.userRepository.findAll();
+  }
+
   async verifyUser(username: string, password: string): Promise<UserDTO> {
     // 1. Find user by username
     const user = await this.userRepository.findByUsername(username);

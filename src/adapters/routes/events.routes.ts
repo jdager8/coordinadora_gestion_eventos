@@ -1,9 +1,11 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
-import { eventSchema } from '../../domain/schemas/event.schema';
-import { EventDTO } from '../../domain/dto/events.dto';
 import EventUseCase from '../../application/use_cases/event.usecase';
+
+import { EventDTO } from '../../domain/dto/events.dto';
 import { UserDTO } from '../../domain/dto/users.dto';
+
+import { eventSchema } from '../../domain/schemas/event.schema';
 
 class EventRoutes {
   public prefix_route = '/events';
@@ -32,7 +34,7 @@ class EventRoutes {
       '/:id',
       {
         schema: eventSchema.get,
-        preValidation: [instance.authorize],
+        preValidation: [instance.authorize, instance.adminUser],
       },
       async (request, reply) => {
         const response = await eventUseCase.findById(request.params.id);
@@ -57,7 +59,7 @@ class EventRoutes {
       '',
       {
         schema: eventSchema.create,
-        preValidation: [instance.authorize],
+        preValidation: [instance.authorize, instance.adminUser],
       },
       async (request, reply) => {
         const response = await eventUseCase.create(
@@ -73,9 +75,9 @@ class EventRoutes {
       '/:id',
       {
         schema: eventSchema.update,
-        preValidation: [instance.authorize],
+        preValidation: [instance.authorize, instance.adminUser],
       },
-      async (request: any, reply) => {
+      async (request, reply) => {
         const response = await eventUseCase.update(
           request.params.id,
           request.body,
@@ -90,7 +92,7 @@ class EventRoutes {
       '/:id',
       {
         schema: eventSchema.delete,
-        preValidation: [instance.authorize],
+        preValidation: [instance.authorize, instance.adminUser],
       },
       async (request, reply) => {
         await eventUseCase.delete(

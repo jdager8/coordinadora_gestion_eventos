@@ -24,7 +24,10 @@ class App {
         customOptions: {
           allErrors: true,
         },
-        plugins: [require('ajv-errors')],
+        plugins: [
+          require('ajv-errors'),
+          require('@fastify/multipart').ajvFilePlugin,
+        ],
       },
     });
   }

@@ -1,10 +1,8 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
-import { eventSchema } from '../../domain/schemas/event.schema';
-import { EventDTO } from '../../domain/dto/events.dto';
-import EventUseCase from '../../application/use_cases/event.usecase';
-import { UserDTO } from '../../domain/dto/users.dto';
 import UserUseCase from '../../application/use_cases/user.usecase';
+
+import { UserDTO } from '../../domain/dto/users.dto';
 
 class EventRoutes {
   public prefix_route = '/users';
@@ -17,15 +15,17 @@ class EventRoutes {
     const userUseCase = UserUseCase.getInstance(instance.config);
 
     // GET
-    instance.get(
+    instance.get<{ Reply: UserDTO[] }>(
       '',
       {
-        schema: eventSchema.getAll,
-        preValidation: [instance.authorize],
+        schema: {
+          tags: ['Users'],
+        },
+        preValidation: [instance.authorize, instance.adminUser],
       },
       async (_request, reply) => {
-        //const response = await userUseCase.findAll();
-        reply.send('');
+        const response = await userUseCase.findAll();
+        reply.send(response);
       },
     );
 

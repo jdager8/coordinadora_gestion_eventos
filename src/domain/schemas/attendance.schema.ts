@@ -32,8 +32,28 @@ const registerAttendanceSchema = {
   },
 };
 
+const uploadAttendanceSchema = {
+  tags: ['attendances'],
+  consumes: ['multipart/form-data'],
+  body: {
+    type: 'object',
+    required: ['template'],
+    properties: {
+      template: {
+        isFile: true,
+      },
+    },
+  },
+  response: {
+    200: responseSchema(200, false),
+    400: responseSchema(400, true),
+    500: responseSchema(500, true),
+  },
+};
+
 const attendanceSchema = {
   register: registerAttendanceSchema,
+  upload: uploadAttendanceSchema,
 };
 
 export { attendanceSchema };

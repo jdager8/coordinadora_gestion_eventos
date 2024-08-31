@@ -4,6 +4,7 @@ import AuthUseCase from '../../application/use_cases/auth.usecase';
 
 import { LoginDTO, RegisterDTO, AuthDTO } from '../../domain/dto/auth.dto';
 import { UserDTO } from '../../domain/dto/users.dto';
+
 import { authSchema } from '../../domain/schemas/auth.schema';
 
 class AuthRoutes {

@@ -21,6 +21,9 @@ declare module 'fastify' {
       EM_MAPBOX_TYPES_LIMIT: number;
       EM_MAPBOX_RADIUS_LIMIT: number;
       EM_MAPBOX_FILTER_TYPES: string;
+      EM_FILE_SIZE_LIMIT: number;
+      EM_FILE_LIMIT: number;
+      EM_FILE_ALLOWED_EXTENSIONS: string;
     };
   }
 }
@@ -49,6 +52,9 @@ function fastifyEnvPlugin(
       'EM_MAPBOX_TYPES_LIMIT',
       'EM_MAPBOX_RADIUS_LIMIT',
       'EM_MAPBOX_FILTER_TYPES',
+      'EM_FILE_SIZE_LIMIT',
+      'EM_FILE_LIMIT',
+      'EM_FILE_ALLOWED_EXTENSIONS',
     ],
     properties: {
       EM_DB_HOST: {
@@ -97,6 +103,15 @@ function fastifyEnvPlugin(
         type: 'number',
       },
       EM_MAPBOX_FILTER_TYPES: {
+        type: 'string',
+      },
+      EM_FILE_SIZE_LIMIT: {
+        type: 'number',
+      },
+      EM_FILE_LIMIT: {
+        type: 'number',
+      },
+      EM_FILE_ALLOWED_EXTENSIONS: {
         type: 'string',
       },
     },

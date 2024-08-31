@@ -27,6 +27,36 @@ class UserRepository {
     return this.instance;
   }
 
+  async findAll(): Promise<UserDTO[]> {
+    // 1. Find all users
+    const users = await this.db.executeQuery(
+      `SELECT
+        json_build_object(
+          'id', u.id,
+          'username', u.username,
+          'password', u.password,
+          'role', json_build_object(
+            'id', u.id_roles,
+            'role', r.role
+          ),
+          'person', json_build_object(
+            'id', p.id,
+            'firstname', p.firstname,
+            'lastname', p.lastname,
+            'email', p.email,
+            'id_number', p.id_number
+          )
+        ) AS user_data
+       FROM
+        users u
+        JOIN persons p ON u.id_persons = p.id
+        JOIN roles r ON u.id_roles = r.id`,
+    );
+
+    // 2. Return the users
+    return users.rows.map((user) => user.user_data as UserDTO);
+  }
+
   async findByUsername(username: string): Promise<UserDTO> {
     // 1. Find the user by username
     const user = await this.db.executeQuery(

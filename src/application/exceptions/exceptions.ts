@@ -47,6 +47,13 @@ class MapBoxException extends Error {
   }
 }
 
+class UnexpectedFile extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UnexpectedFile';
+  }
+}
+
 export {
   NotFoundException,
   BadRequestException,
@@ -55,4 +62,5 @@ export {
   DuplicateException,
   ForeignKeyConstraintException,
   MapBoxException,
+  UnexpectedFile,
 };
