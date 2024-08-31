@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS roles (
+  id SERIAL PRIMARY KEY NOT NULL,
+  role TEXT NOT NULL,
+  CONSTRAINT roles_role_uq UNIQUE (role)
+);

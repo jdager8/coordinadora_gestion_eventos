@@ -1,0 +1,46 @@
+{
+  "name": "coordinadora_gestion_eventos",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "NODE_ENV=production node ./dist/index.js",
+    "start:prod": "npm run build && NODE_ENV=production node ./dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/env": "^4.4.0",
+    "@fastify/jwt": "^8.0.1",
+    "@fastify/multipart": "^8.3.0",
+    "@fastify/postgres": "^5.2.2",
+    "@fastify/swagger": "^8.15.0",
+    "@fastify/swagger-ui": "^4.1.0",
+    "@turf/bbox": "^7.1.0",
+    "@turf/buffer": "^7.1.0",
+    "@turf/helpers": "^7.1.0",
+    "ajv-errors": "^3.0.0",
+    "axios": "^1.7.6",
+    "bcrypt": "^5.1.1",
+    "date-fns": "^3.6.0",
+    "exceljs": "^4.4.0",
+    "fastify": "^4.28.1",
+    "fastify-plugin": "^4.5.1",
+    "pg": "^8.12.0",
+    "pino-pretty": "^11.2.2",
+    "postgrator": "^7.2.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.4",
+    "@types/bcrypt": "^5.0.2",
+    "@types/node": "^22.5.1",
+    "@types/pg": "^8.11.8",
+    "eslint": "^8.42.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.5.4"
+  }
+}
