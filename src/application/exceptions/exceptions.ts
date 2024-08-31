@@ -40,6 +40,13 @@ class ForeignKeyConstraintException extends Error {
   }
 }
 
+class MapBoxException extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'MapBoxException';
+  }
+}
+
 export {
   NotFoundException,
   BadRequestException,
@@ -47,4 +54,5 @@ export {
   ForbiddenException,
   DuplicateException,
   ForeignKeyConstraintException,
+  MapBoxException,
 };

@@ -16,6 +16,11 @@ declare module 'fastify' {
       EM_DB_MIGRATIONS_FOLDER: string;
       EM_JWT_SECRET: string;
       EM_JWT_EXPIRES_IN: string;
+      EM_MAPBOX_API_URL: string;
+      EM_MAPBOX_TOKEN: string;
+      EM_MAPBOX_TYPES_LIMIT: number;
+      EM_MAPBOX_RADIUS_LIMIT: number;
+      EM_MAPBOX_FILTER_TYPES: string;
     };
   }
 }
@@ -39,6 +44,11 @@ function fastifyEnvPlugin(
       'EM_DB_MIGRATIONS_FOLDER',
       'EM_JWT_SECRET',
       'EM_JWT_EXPIRES_IN',
+      'EM_MAPBOX_API_URL',
+      'EM_MAPBOX_TOKEN',
+      'EM_MAPBOX_TYPES_LIMIT',
+      'EM_MAPBOX_RADIUS_LIMIT',
+      'EM_MAPBOX_FILTER_TYPES',
     ],
     properties: {
       EM_DB_HOST: {
@@ -72,6 +82,21 @@ function fastifyEnvPlugin(
         type: 'string',
       },
       EM_JWT_EXPIRES_IN: {
+        type: 'string',
+      },
+      EM_MAPBOX_API_URL: {
+        type: 'string',
+      },
+      EM_MAPBOX_TOKEN: {
+        type: 'string',
+      },
+      EM_MAPBOX_TYPES_LIMIT: {
+        type: 'number',
+      },
+      EM_MAPBOX_RADIUS_LIMIT: {
+        type: 'number',
+      },
+      EM_MAPBOX_FILTER_TYPES: {
         type: 'string',
       },
     },

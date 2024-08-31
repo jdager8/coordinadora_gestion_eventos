@@ -35,6 +35,12 @@ class EventRepository {
           'name', e.name,
           'description', e.description,
           'location', e.location,
+          'address', e.address,
+          'city', e.city,
+          'coordinates', jsonb_build_object(
+            'latitude', e.latitude,
+            'longitude', e.longitude
+          ),
           'startDate', e.start_date,
           'endDate', e.end_date,
           'capacity', e.capacity,
@@ -43,20 +49,20 @@ class EventRepository {
             'id', et.id,
             'type', et.type
           ),
-          'eventSchedule', json_agg(
+          'schedule', json_agg(
             json_build_object(
               'id', es.id,
               'date', es.date
             )
           ),
-          'eventNearPlace', json_agg(DISTINCT
+          'nearPlaces', json_agg(DISTINCT
             jsonb_build_object(
               'id', enp.id,
               'name', enp.name,
               'address', enp.address,
               'coordinates', jsonb_build_object(
-                'latitude', enp.coordinates[0],
-                'longitude', enp.coordinates[1]
+                'latitude', enp.latitude,
+                'longitude', enp.longitude
               )
             )
           ),
@@ -88,6 +94,12 @@ class EventRepository {
           'name', e.name,
           'description', e.description,
           'location', e.location,
+          'address', e.address,
+          'city', e.city,
+          'coordinates', jsonb_build_object(
+            'latitude', e.latitude,
+            'longitude', e.longitude
+          ),
           'startDate', e.start_date,
           'endDate', e.end_date,
           'capacity', e.capacity,
@@ -96,20 +108,20 @@ class EventRepository {
             'id', et.id,
             'type', et.type
           ),
-          'eventSchedule', json_agg(
+          'schedule', json_agg(
             json_build_object(
               'id', es.id,
               'date', es.date
             )
           ),
-          'eventNearPlace', json_agg(DISTINCT
+          'nearPlaces', json_agg(DISTINCT
             jsonb_build_object(
               'id', enp.id,
               'name', enp.name,
               'address', enp.address,
               'coordinates', jsonb_build_object(
-                'latitude', enp.coordinates[0],
-                'longitude', enp.coordinates[1]
+                'latitude', enp.latitude,
+                'longitude', enp.longitude
               )
             )
           ),
@@ -143,6 +155,12 @@ class EventRepository {
           'name', e.name,
           'description', e.description,
           'location', e.location,
+          'address', e.address,
+          'city', e.city,
+          'coordinates', jsonb_build_object(
+            'latitude', e.latitude,
+            'longitude', e.longitude
+          ),
           'startDate', e.start_date,
           'endDate', e.end_date,
           'capacity', e.capacity,
@@ -151,20 +169,20 @@ class EventRepository {
             'id', et.id,
             'type', et.type
           ),
-          'eventSchedule', json_agg(
+          'schedule', json_agg(
             json_build_object(
               'id', es.id,
               'date', es.date
             )
           ),
-          'eventNearPlace', json_agg(DISTINCT
+          'nearPlaces', json_agg(DISTINCT
             jsonb_build_object(
               'id', enp.id,
               'name', enp.name,
               'address', enp.address,
               'coordinates', jsonb_build_object(
-                'latitude', enp.coordinates[0],
-                'longitude', enp.coordinates[1]
+                'latitude', enp.latitude,
+                'longitude', enp.longitude
               )
             )
           ),
@@ -197,24 +215,28 @@ class EventRepository {
       // 1. Create a new event
       newEvent = await this.db.executeQuery(
         `INSERT INTO
-          events (name, description, location, start_date, end_date, capacity, id_events_types, created_by)
+          events (name, description, location, address, city, latitude, longitude, start_date, end_date, capacity, id_events_types, created_by)
          VALUES
-          ($1, $2, $3, $4, $5, $6, $7, $8)
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
          RETURNING id`,
         [
           event.name,
           event.description,
           event.location,
+          event.address,
+          event.city,
+          event.coordinates?.latitude,
+          event.coordinates?.longitude,
           event.startDate,
           event.endDate,
           event.capacity,
-          event.eventTypeId,
+          event.typeId,
           currentUser.id,
         ],
       );
 
       // 2. Insert event schedules
-      for (const schedule of event.eventSchedule) {
+      for (const schedule of event.schedule) {
         await this.db.executeQuery(
           `INSERT INTO
             events_schedule (id_events, date)
@@ -225,13 +247,13 @@ class EventRepository {
       }
 
       // 3. Insert nearby locations
-      if (event.eventNearPlaces && event.eventNearPlaces.length > 0) {
-        for (const nearPlace of event.eventNearPlaces) {
+      if (event.nearPlaces && event.nearPlaces.length > 0) {
+        for (const nearPlace of event.nearPlaces) {
           await this.db.executeQuery(
             `INSERT INTO
-              events_near_places (name, address, coordinates, id_events)
+              events_near_places (name, address, latitude, longitude, id_events)
              VALUES
-              ($1, $2, POINT($3, $4), $5)`,
+              ($1, $2, $3, $4, $5)`,
             [
               nearPlace.name,
               nearPlace.address,

@@ -2,7 +2,7 @@ import UserRepository from '../../infraestructure/repositories/user.repository';
 
 import { UserDTO } from '../../domain/entities/dto/users.dto';
 
-import PasswordHash from '../../helpers/passwordHash';
+import PasswordHash from '../../helpers/password.hash';
 
 import { BadRequestException } from '../exceptions/exceptions';
 

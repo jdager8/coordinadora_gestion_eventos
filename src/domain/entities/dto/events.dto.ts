@@ -3,14 +3,20 @@ interface EventDTO {
   name: string;
   description: string;
   location: string;
+  address: string;
+  city: string;
+  coordinates?: {
+    latitude: string;
+    longitude: string;
+  };
   startDate: Date;
   endDate: Date;
   capacity: number;
   registeredCount: number;
   eventType: Partial<EventTypeDTO>;
-  eventTypeId?: number;
-  eventSchedule: Partial<EventScheduleDTO>[];
-  eventNearPlaces: Partial<EventNearPlacesDTO>[];
+  typeId?: number;
+  schedule: Partial<EventScheduleDTO>[];
+  nearPlaces: Partial<EventNearPlacesDTO>[];
   createdBy?: number | string;
 }
 

@@ -1,6 +1,4 @@
-import { format } from 'path';
 import { responseSchema } from './base.schema';
-import { get } from 'http';
 
 const createEventSchema = {
   tags: ['events'],
@@ -10,11 +8,13 @@ const createEventSchema = {
       'name',
       'description',
       'location',
+      'address',
+      'city',
       'capacity',
       'startDate',
       'endDate',
-      'eventTypeId',
-      'eventSchedule',
+      'typeId',
+      'schedule',
     ],
     properties: {
       name: {
@@ -28,6 +28,21 @@ const createEventSchema = {
       location: {
         type: 'string',
         errorMessage: 'Location must be a string',
+      },
+      address: {
+        type: 'string',
+        errorMessage: 'Address must be a string',
+      },
+      city: {
+        type: 'string',
+        errorMessage: 'City must be a string',
+      },
+      coordinates: {
+        type: 'object',
+        properties: {
+          latitude: { type: 'string' },
+          longitude: { type: 'string' },
+        },
       },
       capacity: {
         type: 'number',
@@ -44,11 +59,11 @@ const createEventSchema = {
         format: 'date',
         errorMessage: 'End date must be a date',
       },
-      eventTypeId: {
+      typeId: {
         type: 'number',
         errorMessage: 'Event type must be a valid id',
       },
-      eventSchedule: {
+      schedule: {
         type: 'array',
         items: {
           type: 'object',
@@ -61,7 +76,7 @@ const createEventSchema = {
           },
         },
       },
-      eventNearPlaces: {
+      nearPlaces: {
         type: 'array',
         items: {
           type: 'object',
@@ -88,18 +103,27 @@ const createEventSchema = {
         name: { type: 'string' },
         description: { type: 'string' },
         location: { type: 'string' },
+        address: { type: 'string' },
+        city: { type: 'string' },
+        coordinates: {
+          type: 'object',
+          properties: {
+            latitude: { type: 'string' },
+            longitude: { type: 'string' },
+          },
+        },
         startDate: { type: 'string', format: 'date' },
         endDate: { type: 'string', format: 'date' },
         capacity: { type: 'number' },
         registeredCount: { type: 'number' },
-        eventType: {
+        evenType: {
           type: 'object',
           properties: {
             id: { type: 'number', default: 1 },
             type: { type: 'string' },
           },
         },
-        eventSchedule: {
+        schedule: {
           type: 'array',
           items: {
             type: 'object',
@@ -109,7 +133,7 @@ const createEventSchema = {
             },
           },
         },
-        eventNearPlaces: {
+        nearPlaces: {
           type: 'array',
           items: {
             type: 'object',
@@ -117,7 +141,13 @@ const createEventSchema = {
               id: { type: 'number', default: 1 },
               name: { type: 'string' },
               address: { type: 'string' },
-              coordinates: { type: 'string' },
+              coordinates: {
+                type: 'object',
+                properties: {
+                  latitude: { type: 'string' },
+                  longitude: { type: 'string' },
+                },
+              },
             },
           },
         },
@@ -146,6 +176,15 @@ const getEventSchema = {
         name: { type: 'string' },
         description: { type: 'string' },
         location: { type: 'string' },
+        address: { type: 'string' },
+        city: { type: 'string' },
+        coordinates: {
+          type: 'object',
+          properties: {
+            latitude: { type: 'string' },
+            longitude: { type: 'string' },
+          },
+        },
         startDate: { type: 'string', format: 'date' },
         endDate: { type: 'string', format: 'date' },
         capacity: { type: 'number' },
@@ -157,7 +196,7 @@ const getEventSchema = {
             type: { type: 'string' },
           },
         },
-        eventSchedule: {
+        schedule: {
           type: 'array',
           items: {
             type: 'object',
@@ -167,7 +206,7 @@ const getEventSchema = {
             },
           },
         },
-        eventNearPlaces: {
+        nearPlaces: {
           type: 'array',
           items: {
             type: 'object',
@@ -175,7 +214,13 @@ const getEventSchema = {
               id: { type: 'number', default: 1 },
               name: { type: 'string' },
               address: { type: 'string' },
-              coordinates: { type: 'string' },
+              coordinates: {
+                type: 'object',
+                properties: {
+                  latitude: { type: 'string' },
+                  longitude: { type: 'string' },
+                },
+              },
             },
           },
         },
@@ -199,6 +244,15 @@ const getAllEventsSchema = {
           name: { type: 'string' },
           description: { type: 'string' },
           location: { type: 'string' },
+          address: { type: 'string' },
+          city: { type: 'string' },
+          coordinates: {
+            type: 'object',
+            properties: {
+              latitude: { type: 'string' },
+              longitude: { type: 'string' },
+            },
+          },
           startDate: { type: 'string', format: 'date' },
           endDate: { type: 'string', format: 'date' },
           capacity: { type: 'number' },
@@ -210,7 +264,7 @@ const getAllEventsSchema = {
               type: { type: 'string' },
             },
           },
-          eventSchedule: {
+          schedule: {
             type: 'array',
             items: {
               type: 'object',
@@ -220,7 +274,7 @@ const getAllEventsSchema = {
               },
             },
           },
-          eventNearPlaces: {
+          nearPlaces: {
             type: 'array',
             items: {
               type: 'object',
@@ -228,7 +282,13 @@ const getAllEventsSchema = {
                 id: { type: 'number', default: 1 },
                 name: { type: 'string' },
                 address: { type: 'string' },
-                coordinates: { type: 'string' },
+                coordinates: {
+                  type: 'object',
+                  properties: {
+                    latitude: { type: 'string' },
+                    longitude: { type: 'string' },
+                  },
+                },
               },
             },
           },
@@ -260,6 +320,15 @@ const searchEventSchema = {
           name: { type: 'string' },
           description: { type: 'string' },
           location: { type: 'string' },
+          address: { type: 'string' },
+          city: { type: 'string' },
+          coordinates: {
+            type: 'object',
+            properties: {
+              latitude: { type: 'string' },
+              longitude: { type: 'string' },
+            },
+          },
           startDate: { type: 'string', format: 'date' },
           endDate: { type: 'string', format: 'date' },
           capacity: { type: 'number' },
@@ -271,7 +340,7 @@ const searchEventSchema = {
               type: { type: 'string' },
             },
           },
-          eventSchedule: {
+          schedule: {
             type: 'array',
             items: {
               type: 'object',
@@ -281,15 +350,21 @@ const searchEventSchema = {
               },
             },
           },
-          eventNearPlaces: {
+          nearPlaces: {
             type: 'array',
             items: {
               type: 'object',
               properties: {
-                id: { type: 'number', default: 1 },
+                id: { type: 'string', default: 1 },
                 name: { type: 'string' },
                 address: { type: 'string' },
-                coordinates: { type: 'string' },
+                coordinates: {
+                  type: 'object',
+                  properties: {
+                    latitude: { type: 'string' },
+                    longitude: { type: 'string' },
+                  },
+                },
               },
             },
           },

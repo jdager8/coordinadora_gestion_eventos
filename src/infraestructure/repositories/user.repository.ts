@@ -3,7 +3,7 @@ import PostgresDatabase from '../database/postgres/postgres.db';
 import { UserDTO } from '../../domain/entities/dto/users.dto';
 import { RegisterDTO } from '../../domain/entities/dto/auth.dto';
 
-import PasswordHash from '../../helpers/passwordHash';
+import PasswordHash from '../../helpers/password.hash';
 
 import {
   BadRequestException,

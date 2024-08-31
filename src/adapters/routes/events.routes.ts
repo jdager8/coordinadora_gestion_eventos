@@ -47,7 +47,7 @@ class EventRoutes {
         preValidation: [instance.authorize],
       },
       async (request, reply) => {
-        const response = await eventUseCase.findByName(request.query.q);
+        const response = await eventUseCase.searchEvents(request.query.q);
         reply.send(response);
       },
     );
