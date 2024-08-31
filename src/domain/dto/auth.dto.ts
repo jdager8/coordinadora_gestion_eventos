@@ -5,8 +5,12 @@ interface LoginDTO {
   password: string;
 }
 
+interface AuthDTO {
+  token: string;
+}
+
 interface RegisterDTO extends Omit<UserDTO, 'role'> {
   roleId?: number;
 }
 
-export { LoginDTO, RegisterDTO };
+export { LoginDTO, RegisterDTO, AuthDTO };

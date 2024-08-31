@@ -1,7 +1,7 @@
 import PostgresDatabase from '../database/postgres/postgres.db';
 
-import { UserDTO } from '../../domain/entities/dto/users.dto';
-import { RegisterDTO } from '../../domain/entities/dto/auth.dto';
+import { UserDTO } from '../../domain/dto/users.dto';
+import { RegisterDTO } from '../../domain/dto/auth.dto';
 
 import PasswordHash from '../../helpers/password.hash';
 
@@ -25,53 +25,6 @@ class UserRepository {
       this.instance = new UserRepository(config);
     }
     return this.instance;
-  }
-
-  async create(user: RegisterDTO): Promise<UserDTO> {
-    let newUser: any;
-    let person: any;
-
-    await this.db.beginTransaction();
-    try {
-      // 1. Create a new person
-      person = await this.db.executeQuery(
-        `INSERT INTO
-          persons (firstname, lastname, email, id_number)
-         VALUES
-          ($1, $2, $3, $4)
-         RETURNING id`,
-        [
-          user.person.firstName,
-          user.person.lastName,
-          user.person.email,
-          user.person.idNumber,
-        ],
-      );
-
-      // 2. Create a new user
-      let hashedPassword = '';
-      if (user.password) {
-        hashedPassword = await PasswordHash.hash(user.password);
-      }
-
-      newUser = await this.db.executeQuery(
-        `INSERT INTO
-          users (username, password, id_persons, id_roles)
-         VALUES
-          ($1, $2, $3, $4)
-         RETURNING id`,
-        [user.username, hashedPassword, person.rows[0].id, user.roleId],
-      );
-
-      await this.db.commitTransaction();
-    } catch (error: any) {
-      console.error(error);
-      await this.db.rollbackTransaction();
-      throw new BadRequestException(`Error creating user: ${error.message}`);
-    }
-
-    // 3. Return the new user
-    return await this.findById(newUser.rows[0].id);
   }
 
   async findByUsername(username: string): Promise<UserDTO> {
@@ -144,6 +97,53 @@ class UserRepository {
     } else {
       throw new NotFoundException(`User not found: ${id}`);
     }
+  }
+
+  async create(user: RegisterDTO): Promise<UserDTO> {
+    let newUser: any;
+    let person: any;
+
+    await this.db.beginTransaction();
+    try {
+      // 1. Create a new person
+      person = await this.db.executeQuery(
+        `INSERT INTO
+          persons (firstname, lastname, email, id_number)
+         VALUES
+          ($1, $2, $3, $4)
+         RETURNING id`,
+        [
+          user.person.firstName,
+          user.person.lastName,
+          user.person.email,
+          user.person.idNumber,
+        ],
+      );
+
+      // 2. Create a new user
+      let hashedPassword = '';
+      if (user.password) {
+        hashedPassword = await PasswordHash.hash(user.password);
+      }
+
+      newUser = await this.db.executeQuery(
+        `INSERT INTO
+          users (username, password, id_persons, id_roles)
+         VALUES
+          ($1, $2, $3, $4)
+         RETURNING id`,
+        [user.username, hashedPassword, person.rows[0].id, user.roleId],
+      );
+
+      await this.db.commitTransaction();
+    } catch (error: any) {
+      console.error(error);
+      await this.db.rollbackTransaction();
+      throw new BadRequestException(`Error creating user: ${error.message}`);
+    }
+
+    // 3. Return the new user
+    return await this.findById(newUser.rows[0].id);
   }
 }
 

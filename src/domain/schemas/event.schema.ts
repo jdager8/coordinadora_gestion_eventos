@@ -1,3 +1,4 @@
+import { create } from 'axios';
 import { responseSchema } from './base.schema';
 
 const createEventSchema = {
@@ -93,6 +94,7 @@ const createEventSchema = {
           },
         },
       },
+      createdBy: { type: 'string' },
     },
   },
   response: {
@@ -151,6 +153,7 @@ const createEventSchema = {
             },
           },
         },
+        createdBy: { type: 'string' },
       },
     }),
     400: responseSchema(400, true),
@@ -224,6 +227,7 @@ const getEventSchema = {
             },
           },
         },
+        createdBy: { type: 'string' },
       },
     }),
     400: responseSchema(400, true),
@@ -292,6 +296,7 @@ const getAllEventsSchema = {
               },
             },
           },
+          createdBy: { type: 'string' },
         },
       },
     }),
@@ -368,9 +373,30 @@ const searchEventSchema = {
               },
             },
           },
+          createdBy: { type: 'string' },
         },
       },
     }),
+    400: responseSchema(400, true),
+    404: responseSchema(404, true),
+    500: responseSchema(500, true),
+  },
+};
+
+const deleteEventSchema = {
+  tags: ['events'],
+  params: {
+    type: 'object',
+    required: ['id'],
+    properties: {
+      id: { type: 'number' },
+    },
+  },
+  response: {
+    204: {
+      type: 'string',
+      description: 'No content',
+    },
     400: responseSchema(400, true),
     404: responseSchema(404, true),
     500: responseSchema(500, true),
@@ -394,6 +420,7 @@ const eventSchema = {
   search: searchEventSchema,
   create: createEventSchema,
   update: updateEventSchema,
+  delete: deleteEventSchema,
 };
 
 export { eventSchema };

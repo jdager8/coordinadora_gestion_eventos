@@ -1,6 +1,6 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 
-import { ResponseInterface } from '../../domain/interfaces/response.interface';
+import { IResponse } from '../../domain/interfaces/response.interface';
 
 import {
   NotFoundException,
@@ -16,7 +16,7 @@ function errorHandler(
   _request: FastifyRequest,
   reply: FastifyReply,
 ): FastifyReply {
-  let errorResponse: ResponseInterface = {
+  let errorResponse: IResponse = {
     error: true,
     data: null,
     message: error.message,

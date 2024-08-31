@@ -2,8 +2,8 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import AuthUseCase from '../../application/use_cases/auth.usecase';
 
-import { LoginDTO, RegisterDTO } from '../../domain/entities/dto/auth.dto';
-import { UserDTO } from '../../domain/entities/dto/users.dto';
+import { LoginDTO, RegisterDTO, AuthDTO } from '../../domain/dto/auth.dto';
+import { UserDTO } from '../../domain/dto/users.dto';
 import { authSchema } from '../../domain/schemas/auth.schema';
 
 class AuthRoutes {
@@ -16,16 +16,13 @@ class AuthRoutes {
   ) {
     const authUseCase = AuthUseCase.getInstance(instance.config);
 
-    instance.post(
+    instance.post<{ Body: LoginDTO; Reply: AuthDTO }>(
       '/login',
       {
         schema: authSchema.login,
       },
       async (request, reply) => {
-        const response = await authUseCase.login(
-          request.body as LoginDTO,
-          instance,
-        );
+        const response = await authUseCase.login(request.body, instance);
         reply.send(response);
       },
     );

@@ -1,6 +1,6 @@
 import UserRepository from '../../infraestructure/repositories/user.repository';
 
-import { UserDTO } from '../../domain/entities/dto/users.dto';
+import { UserDTO } from '../../domain/dto/users.dto';
 
 import PasswordHash from '../../helpers/password.hash';
 

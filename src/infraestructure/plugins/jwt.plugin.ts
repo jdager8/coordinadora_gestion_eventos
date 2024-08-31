@@ -6,6 +6,7 @@ import {
 } from 'fastify';
 import fastifyJwt from '@fastify/jwt';
 import fastifyPlugin from 'fastify-plugin';
+
 import { ForbiddenException } from '../../application/exceptions/exceptions';
 
 declare module 'fastify' {

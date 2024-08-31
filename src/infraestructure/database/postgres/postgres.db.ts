@@ -46,6 +46,7 @@ class PostgresDatabase {
       client = await this.pool.connect();
       return await client.query(query, params);
     } catch (error: any) {
+      console.error(`Query: ${query}`);
       if (error.code === '23505') {
         throw new DuplicateException(DATABASE_ERROR.DUPLICATE_KEY);
       }
@@ -55,7 +56,6 @@ class PostgresDatabase {
         );
       }
       console.error(`Error executing query: ${error}`);
-      console.error(`Query: ${query}`);
       throw new Error(`Error executing query`);
     } finally {
       if (client) {

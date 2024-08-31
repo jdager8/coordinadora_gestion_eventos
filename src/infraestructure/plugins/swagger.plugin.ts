@@ -25,7 +25,8 @@ function fastifySwaggerPlugin(
         tags: [
           { name: 'auth', description: 'Auth routes' },
           { name: 'events', description: 'Events routes' },
-          { name: 'users', description: 'Users routes' },
+          { name: 'enrollments', description: 'Enrollments routes' },
+          { name: 'attendances', description: 'Attendances routes' },
           { name: 'reports', description: 'Reports routes' },
         ],
       },

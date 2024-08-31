@@ -5,7 +5,8 @@ import {
   FastifyRequest,
 } from 'fastify';
 import fastifyPlugin from 'fastify-plugin';
-import { ResponseInterface } from '../../domain/interfaces/response.interface';
+
+import { IResponse } from '../../domain/interfaces/response.interface';
 
 function responseParserPlugin(
   instance: FastifyInstance,
@@ -23,7 +24,7 @@ function responseParserPlugin(
         const data = payload;
         const error = statusCode >= 400;
 
-        const formattedResponse: ResponseInterface = {
+        const formattedResponse: IResponse = {
           statusCode,
           message,
           data,

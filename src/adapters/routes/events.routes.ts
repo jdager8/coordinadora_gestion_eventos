@@ -1,9 +1,9 @@
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import { eventSchema } from '../../domain/schemas/event.schema';
-import { EventDTO } from '../../domain/entities/dto/events.dto';
+import { EventDTO } from '../../domain/dto/events.dto';
 import EventUseCase from '../../application/use_cases/event.usecase';
-import { UserDTO } from '../../domain/entities/dto/users.dto';
+import { UserDTO } from '../../domain/dto/users.dto';
 
 class EventRoutes {
   public prefix_route = '/events';
@@ -69,25 +69,35 @@ class EventRoutes {
     );
 
     // PUT
-    instance.put(
+    instance.put<{ Params: { id: number }; Body: EventDTO; Reply: EventDTO }>(
       '/:id',
       {
         schema: eventSchema.update,
         preValidation: [instance.authorize],
       },
       async (request: any, reply) => {
-        reply.send(`Actualizando evento con id ${request.params.id}`);
+        const response = await eventUseCase.update(
+          request.params.id,
+          request.body,
+          (request.user as any).user as UserDTO,
+        );
+        reply.send(response);
       },
     );
 
     // DELETE
-    instance.delete(
+    instance.delete<{ Params: { id: number } }>(
       '/:id',
       {
+        schema: eventSchema.delete,
         preValidation: [instance.authorize],
       },
-      async (request: any, reply) => {
-        reply.send(`Eliminando evento con id ${request.params.id}`);
+      async (request, reply) => {
+        await eventUseCase.delete(
+          request.params.id,
+          (request.user as any).user as UserDTO,
+        );
+        reply.code(204).send();
       },
     );
 

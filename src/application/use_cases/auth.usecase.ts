@@ -4,8 +4,8 @@ import UserUseCase from './user.usecase';
 
 import UserRepository from '../../infraestructure/repositories/user.repository';
 
-import { LoginDTO, RegisterDTO } from '../../domain/entities/dto/auth.dto';
-import { UserDTO } from '../../domain/entities/dto/users.dto';
+import { LoginDTO, RegisterDTO } from '../../domain/dto/auth.dto';
+import { UserDTO } from '../../domain/dto/users.dto';
 
 import { BadRequestException } from '../exceptions/exceptions';
 

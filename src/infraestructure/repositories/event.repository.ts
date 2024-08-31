@@ -1,7 +1,11 @@
 import PostgresDatabase from '../database/postgres/postgres.db';
 
-import { CreateEventDTO, EventDTO } from '../../domain/entities/dto/events.dto';
-import { UserDTO } from '../../domain/entities/dto/users.dto';
+import {
+  CreateEventDTO,
+  EventDTO,
+  UpdateEventDTO,
+} from '../../domain/dto/events.dto';
+import { UserDTO } from '../../domain/dto/users.dto';
 
 import {
   BadRequestException,
@@ -143,7 +147,7 @@ class EventRepository {
     if (event.rows.length === 1) {
       return event.rows[0].event_data as EventDTO;
     }
-    throw new NotFoundException('Event not found');
+    throw new NotFoundException(`Event not found: ${id}`);
   }
 
   async findByName(q: string): Promise<EventDTO[]> {
@@ -272,6 +276,147 @@ class EventRepository {
 
     // 4. Return the new event
     return await this.findById(newEvent.rows[0].id);
+  }
+
+  // UPDATE
+  async update(id: number, event: UpdateEventDTO): Promise<any> {
+    this.db.beginTransaction();
+    try {
+      // 1. Update the event
+      await this.db.executeQuery(
+        `UPDATE events
+         SET
+          name = COALESCE($1, name),
+          description = COALESCE($2, description),
+          location = COALESCE($3, location),
+          address = COALESCE($4, address),
+          city = COALESCE($5, city),
+          latitude = COALESCE($6, latitude),
+          longitude = COALESCE($7, longitude),
+          start_date = COALESCE($8, start_date),
+          end_date = COALESCE($9, end_date),
+          capacity = COALESCE($10, capacity),
+          id_events_types = COALESCE($11, id_events_types)
+         WHERE id = $12
+         RETURNING id`,
+        [
+          event.name,
+          event.description,
+          event.location,
+          event.address,
+          event.city,
+          event.coordinates?.latitude,
+          event.coordinates?.longitude,
+          event.startDate,
+          event.endDate,
+          event.capacity,
+          event.typeId,
+          id,
+        ],
+      );
+
+      // 2. Insert/Update event schedules, insert new schedules, update existing schedules, and delete removed schedules
+      if (event.schedule && event.schedule.length > 0) {
+        for (const schedule of event.schedule) {
+          // INSERT AND UPDATE ON CONFLICT
+          await this.db.executeQuery(
+            `INSERT INTO
+              events_schedule (id_events, date)
+             VALUES
+              ($1, $2)
+             ON CONFLICT (id_events, date)
+             DO UPDATE SET
+              date = $2`,
+            [id, schedule.date],
+          );
+        }
+
+        // DELETE REMOVED SCHEDULES
+        await this.db.executeQuery(
+          `DELETE FROM events_schedule
+           WHERE id_events = $1
+           AND date NOT IN (${event.schedule.map((s, i) => `$${i + 2}`).join(',')})`,
+          [id, ...event.schedule.map((s) => s.date)],
+        );
+      }
+
+      // 3. Insert/Update nearby locations, insert new locations, update existing locations, and delete removed locations
+      if (event.nearPlaces && event.nearPlaces.length > 0) {
+        for (const nearPlace of event.nearPlaces) {
+          // INSERT AND UPDATE ON CONFLICT
+          await this.db.executeQuery(
+            `INSERT INTO
+              events_near_places (name, address, latitude, longitude, id_events)
+             VALUES
+              ($1, $2, $3, $4, $5)
+             ON CONFLICT (name, address, id_events)
+             DO UPDATE SET
+              address = $2,
+              latitude = $3,
+              longitude = $4`,
+            [
+              nearPlace.name,
+              nearPlace.address,
+              nearPlace.coordinates?.latitude,
+              nearPlace.coordinates?.longitude,
+              id,
+            ],
+          );
+        }
+
+        // DELETE REMOVED LOCATIONS
+        await this.db.executeQuery(
+          `DELETE FROM events_near_places
+           WHERE id_events = $1
+           AND name NOT IN (${event.nearPlaces.map((np, i) => `$${i + 2}`).join(',')})`,
+          [id, ...event.nearPlaces.map((np) => np.name)],
+        );
+      }
+
+      this.db.commitTransaction();
+    } catch (error: any) {
+      this.db.rollbackTransaction();
+      throw new BadRequestException(`Error updating event: ${error.message}`);
+    }
+
+    // 4. Return the updated event
+    return await this.findById(id);
+  }
+
+  async updateEventRegistered(
+    id: number,
+    add: boolean = true,
+  ): Promise<boolean> {
+    // 1. Update the event registered count if add is true, otherwise decrease it
+    const result = await this.db.executeQuery(
+      `UPDATE events
+       SET
+        registered_count = registered_count ${add ? '+' : '-'} 1
+       WHERE id = $1`,
+      [id],
+    );
+
+    // 2. Return the updated event
+    if (result.rowCount === 1) {
+      return true;
+    } else {
+      throw new BadRequestException('The event could not be updated');
+    }
+  }
+
+  // DELETE
+  async delete(id: number): Promise<void> {
+    // 1. Delete the event
+    const result = await this.db.executeQuery(
+      'DELETE FROM events WHERE id = $1',
+      [id],
+    );
+
+    if (result.rowCount !== 0) {
+      throw new BadRequestException('The event could not be deleted');
+    } else {
+      return;
+    }
   }
 }
 

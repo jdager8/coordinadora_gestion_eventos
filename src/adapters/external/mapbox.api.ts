@@ -6,7 +6,7 @@ import { buffer } from '@turf/buffer';
 import { MapBoxException } from '../../application/exceptions/exceptions';
 
 import FormatString from '../../helpers/format.string';
-import { EventNearPlacesDTO } from '../../domain/entities/dto/events.dto';
+import { EventNearPlacesDTO } from '../../domain/dto/events.dto';
 
 class MapBoxAPI {
   private static instance: MapBoxAPI;
