@@ -31,6 +31,10 @@ class EventUseCase {
   async findById(id: number): Promise<EventDTO> {
     return this.eventRepository.findById(id);
   }
+
+  async findByName(q: string): Promise<EventDTO[]> {
+    return this.eventRepository.findByName(q);
+  }
 }
 
 export default EventUseCase;

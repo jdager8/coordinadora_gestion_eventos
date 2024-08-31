@@ -25,6 +25,171 @@ class EventRepository {
     return this.instance;
   }
 
+  // READ
+  async findAll(): Promise<EventDTO[]> {
+    // 1. Find all events
+    const events = await this.db.executeQuery(
+      `SELECT
+        json_build_object(
+          'id', e.id,
+          'name', e.name,
+          'description', e.description,
+          'location', e.location,
+          'startDate', e.start_date,
+          'endDate', e.end_date,
+          'capacity', e.capacity,
+          'registeredCount', e.registered_count,
+          'eventType', json_build_object(
+            'id', et.id,
+            'type', et.type
+          ),
+          'eventSchedule', json_agg(
+            json_build_object(
+              'id', es.id,
+              'date', es.date
+            )
+          ),
+          'eventNearPlace', json_agg(DISTINCT
+            jsonb_build_object(
+              'id', enp.id,
+              'name', enp.name,
+              'address', enp.address,
+              'coordinates', jsonb_build_object(
+                'latitude', enp.coordinates[0],
+                'longitude', enp.coordinates[1]
+              )
+            )
+          ),
+          'createdBy', u.username
+        ) AS event_data
+      FROM
+        events e
+        LEFT JOIN events_types et ON e.id_events_types = et.id
+        LEFT JOIN events_schedule es ON e.id = es.id_events
+        LEFT JOIN events_near_places enp ON e.id = enp.id_events
+        LEFT JOIN users u ON e.created_by = u.id
+      GROUP BY
+        e.id, et.id, u.username`,
+    );
+
+    const eventsData: EventDTO[] = events.rows.map(
+      (row: any) => row.event_data,
+    );
+
+    return eventsData;
+  }
+
+  async findById(id: number): Promise<EventDTO> {
+    // 1. Find the event by id
+    const event = await this.db.executeQuery(
+      `SELECT
+        json_build_object(
+          'id', e.id,
+          'name', e.name,
+          'description', e.description,
+          'location', e.location,
+          'startDate', e.start_date,
+          'endDate', e.end_date,
+          'capacity', e.capacity,
+          'registeredCount', e.registered_count,
+          'eventType', json_build_object(
+            'id', et.id,
+            'type', et.type
+          ),
+          'eventSchedule', json_agg(
+            json_build_object(
+              'id', es.id,
+              'date', es.date
+            )
+          ),
+          'eventNearPlace', json_agg(DISTINCT
+            jsonb_build_object(
+              'id', enp.id,
+              'name', enp.name,
+              'address', enp.address,
+              'coordinates', jsonb_build_object(
+                'latitude', enp.coordinates[0],
+                'longitude', enp.coordinates[1]
+              )
+            )
+          ),
+          'createdBy', u.username
+        ) AS event_data
+      FROM
+        events e
+        LEFT JOIN events_types et ON e.id_events_types = et.id
+        LEFT JOIN events_schedule es ON e.id = es.id_events
+        LEFT JOIN events_near_places enp ON e.id = enp.id_events
+        LEFT JOIN users u ON e.created_by = u.id
+      WHERE e.id = $1
+      GROUP BY
+        e.id, et.id, u.username`,
+      [id],
+    );
+
+    // 2. Return the event
+    if (event.rows.length === 1) {
+      return event.rows[0].event_data as EventDTO;
+    }
+    throw new NotFoundException('Event not found');
+  }
+
+  async findByName(q: string): Promise<EventDTO[]> {
+    // 1. Find the event by name
+    const events = await this.db.executeQuery(
+      `SELECT
+        json_build_object(
+          'id', e.id,
+          'name', e.name,
+          'description', e.description,
+          'location', e.location,
+          'startDate', e.start_date,
+          'endDate', e.end_date,
+          'capacity', e.capacity,
+          'registeredCount', e.registered_count,
+          'eventType', json_build_object(
+            'id', et.id,
+            'type', et.type
+          ),
+          'eventSchedule', json_agg(
+            json_build_object(
+              'id', es.id,
+              'date', es.date
+            )
+          ),
+          'eventNearPlace', json_agg(DISTINCT
+            jsonb_build_object(
+              'id', enp.id,
+              'name', enp.name,
+              'address', enp.address,
+              'coordinates', jsonb_build_object(
+                'latitude', enp.coordinates[0],
+                'longitude', enp.coordinates[1]
+              )
+            )
+          ),
+          'createdBy', u.username
+        ) AS event_data
+      FROM
+        events e
+        LEFT JOIN events_types et ON e.id_events_types = et.id
+        LEFT JOIN events_schedule es ON e.id = es.id_events
+        LEFT JOIN events_near_places enp ON e.id = enp.id_events
+        LEFT JOIN users u ON e.created_by = u.id
+      WHERE e.name ILIKE $1
+      GROUP BY
+        e.id, et.id, u.username`,
+      [`%${q}%`],
+    );
+
+    const eventsData: EventDTO[] = events.rows.map(
+      (row: any) => row.event_data,
+    );
+
+    return eventsData;
+  }
+
+  // CREATE
   async create(event: CreateEventDTO, currentUser: UserDTO): Promise<any> {
     this.db.beginTransaction();
     let newEvent: any;
@@ -85,80 +250,6 @@ class EventRepository {
 
     // 4. Return the new event
     return await this.findById(newEvent.rows[0].id);
-  }
-
-  async findAll(): Promise<EventDTO[]> {
-    return [];
-  }
-
-  async findById(id: number): Promise<EventDTO> {
-    // 1. Find the event by id
-    const event = await this.db.executeQuery(
-      `SELECT
-        *
-       FROM
-        events e
-        JOIN events_types et ON e.id_events_types = et.id
-        JOIN users u ON e.created_by = u.id
-      WHERE e.id = $1`,
-      [id],
-    );
-
-    const eventSchedule = await this.db.executeQuery(
-      `SELECT
-        id,
-        date
-       FROM
-        events_schedule
-      WHERE id_events = $1`,
-      [id],
-    );
-
-    const eventNearPlaces = await this.db.executeQuery(
-      `SELECT
-        id,
-        name,
-        address,
-        coordinates
-       FROM
-        events_near_places
-      WHERE id_events = $1`,
-      [id],
-    );
-
-    console.log(event.rows);
-
-    // 2. Return the event
-    if (event.rows.length > 0) {
-      return {
-        id: event.rows[0].id,
-        name: event.rows[0].name,
-        description: event.rows[0].description,
-        location: event.rows[0].location,
-        startDate: event.rows[0].start_date,
-        endDate: event.rows[0].end_date,
-        capacity: event.rows[0].capacity,
-        eventType: {
-          id: event.rows[0].id_events_types,
-          type: event.rows[0].type,
-        },
-        eventSchedule: eventSchedule.rows.map((row: any) => ({
-          id: row.id,
-          date: row.date,
-        })),
-        eventNearPlaces: eventNearPlaces.rows.map((row: any) => ({
-          id: row.id,
-          name: row.name,
-          address: row.address,
-          coordinates: {
-            latitude: row.coordinates.x,
-            longitude: row.coordinates.y,
-          },
-        })),
-        createdBy: event.rows[0].username,
-      } as EventDTO;
-    }
-    throw new NotFoundException('Event not found');
   }
 }
 

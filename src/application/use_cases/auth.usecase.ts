@@ -35,6 +35,7 @@ class AuthUseCase {
     );
 
     if (user) {
+      delete user.password;
       const token = instance.jwt.sign({ user });
       return { token };
     }

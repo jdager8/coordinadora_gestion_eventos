@@ -78,7 +78,22 @@ class UserRepository {
     // 1. Find the user by username
     const user = await this.db.executeQuery(
       `SELECT
-        *
+        json_build_object(
+          'id', u.id,
+          'username', u.username,
+          'password', u.password,
+          'role', json_build_object(
+            'id', u.id_roles,
+            'role', r.role
+          ),
+          'person', json_build_object(
+            'id', p.id,
+            'firstname', p.firstname,
+            'lastname', p.lastname,
+            'email', p.email,
+            'id_number', p.id_number
+          )
+        ) AS user_data
        FROM
         users u
         JOIN persons p ON u.id_persons = p.id
@@ -88,20 +103,8 @@ class UserRepository {
     );
 
     // 2. Return the user
-    if (user.rows.length > 0) {
-      return {
-        id: user.rows[0].id,
-        username: user.rows[0].username,
-        password: user.rows[0].password,
-        role: { id: user.rows[0].id_roles, role: user.rows[0].role },
-        person: {
-          id: user.rows[0].id_persons,
-          firstName: user.rows[0].firstname,
-          lastName: user.rows[0].lastname,
-          email: user.rows[0].email,
-          idNumber: user.rows[0].id_number,
-        },
-      } as UserDTO;
+    if (user.rows.length === 1) {
+      return user.rows[0].user_data as UserDTO;
     } else {
       throw new NotFoundException(`User not found: ${username}`);
     }
@@ -111,7 +114,22 @@ class UserRepository {
     // 1. Find the user by id
     const user = await this.db.executeQuery(
       `SELECT
-        *
+        json_build_object(
+          'id', u.id,
+          'username', u.username,
+          'password', u.password,
+          'role', json_build_object(
+            'id', u.id_roles,
+            'role', r.role
+          ),
+          'person', json_build_object(
+            'id', p.id,
+            'firstname', p.firstname,
+            'lastname', p.lastname,
+            'email', p.email,
+            'id_number', p.id_number
+          )
+        ) AS user_data
        FROM
         users u
         JOIN persons p ON u.id_persons = p.id
@@ -121,20 +139,8 @@ class UserRepository {
     );
 
     // 2. Return the user
-    if (user.rows.length > 0) {
-      return {
-        id: user.rows[0].id,
-        username: user.rows[0].username,
-        password: user.rows[0].password,
-        role: { id: user.rows[0].id_roles, role: user.rows[0].role },
-        person: {
-          id: user.rows[0].id_persons,
-          firstName: user.rows[0].firstname,
-          lastName: user.rows[0].lastname,
-          email: user.rows[0].email,
-          idNumber: user.rows[0].id_number,
-        },
-      } as UserDTO;
+    if (user.rows.length === 1) {
+      return user.rows[0].user_data as UserDTO;
     } else {
       throw new NotFoundException(`User not found: ${id}`);
     }

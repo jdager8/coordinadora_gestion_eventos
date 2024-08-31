@@ -15,6 +15,44 @@ class EventRoutes {
   ) {
     const eventUseCase = EventUseCase.getInstance(instance.config);
 
+    // GET
+    instance.get<{ Reply: EventDTO[] }>(
+      '',
+      {
+        schema: eventSchema.getAll,
+        preValidation: [instance.authorize],
+      },
+      async (_request, reply) => {
+        const response = await eventUseCase.findAll();
+        reply.send(response);
+      },
+    );
+
+    instance.get<{ Params: { id: number }; Reply: EventDTO }>(
+      '/:id',
+      {
+        schema: eventSchema.get,
+        preValidation: [instance.authorize],
+      },
+      async (request, reply) => {
+        const response = await eventUseCase.findById(request.params.id);
+        reply.send(response);
+      },
+    );
+
+    instance.get<{ Querystring: { q: string }; Reply: EventDTO[] }>(
+      '/search',
+      {
+        schema: eventSchema.search,
+        preValidation: [instance.authorize],
+      },
+      async (request, reply) => {
+        const response = await eventUseCase.findByName(request.query.q);
+        reply.send(response);
+      },
+    );
+
+    // POST
     instance.post<{ Body: EventDTO; Reply: EventDTO }>(
       '',
       {
@@ -30,26 +68,7 @@ class EventRoutes {
       },
     );
 
-    instance.get(
-      '',
-      {
-        preValidation: [instance.authorize],
-      },
-      async (request, reply) => {
-        reply.send('Eventos registrados');
-      },
-    );
-
-    instance.get(
-      '/:id',
-      {
-        preValidation: [instance.authorize],
-      },
-      async (request: any, reply) => {
-        reply.send(`Evento con id ${request.params.id}`);
-      },
-    );
-
+    // PUT
     instance.put(
       '/:id',
       {
@@ -61,6 +80,7 @@ class EventRoutes {
       },
     );
 
+    // DELETE
     instance.delete(
       '/:id',
       {
