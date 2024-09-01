@@ -103,7 +103,7 @@ Adicionalmente se provee archivo .json con la definición del API para pruebas e
 
 - Video
 ```bash
-https://www.loom.com/share/bff28a16b1864144909ab254895bf800
+[https://www.loom.com/share/bff28a16b1864144909ab254895bf800](https://www.loom.com/share/03f6454a1b224445894bc3c7fdaea6cc?sid=4a0e98bd-7c90-441b-9f9d-cf71d0c38ccf)
 ```
 
 - CI/CD - Arquitectura
