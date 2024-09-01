@@ -103,7 +103,7 @@ Adicionalmente se provee archivo .json con la definición del API para pruebas e
 
 - Video
 ```bash
-/docs/em.postman_collection.json
+[/docs/em.postman_collection.json](https://www.loom.com/share/bff28a16b1864144909ab254895bf800)
 ```
 
 - CI/CD - Arquitectura
