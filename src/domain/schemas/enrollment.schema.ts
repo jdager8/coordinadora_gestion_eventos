@@ -11,7 +11,6 @@ const getAllSchema = {
           id: { type: 'number', default: 1 },
           eventId: { type: 'number', default: 1 },
           enrollmentId: { type: 'number', default: 1 },
-          createdBy: { type: 'string' },
         },
       },
     }),

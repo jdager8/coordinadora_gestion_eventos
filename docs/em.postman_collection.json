@@ -1,0 +1,747 @@
+{
+	"info": {
+		"_postman_id": "45139340-8511-478c-8579-a65e85445588",
+		"name": "COORDINADORA Event Manager",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21910184"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseData = pm.response.json();\r",
+									"\r",
+									"pm.collectionVariables.set(\"USER_JWT\", responseData.data.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"Test123$\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/login",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"jmdm\",\r\n    \"password\": \"Test123$\",\r\n    \"roleId\": \"1\",\r\n    \"person\": {\r\n        \"firstName\": \"José M\",\r\n        \"lastName\": \"Dager M\",\r\n        \"email\": \"jose.dager2@gmail.com\",\r\n        \"idNumber\": \"123456\"\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/auth/register",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Events",
+			"item": [
+				{
+					"name": "Search Events",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/events/search?q=1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"events",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Events",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/events",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/events/6",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"events",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/events/8",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"events",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"Evento 10\",\r\n    \"description\": \"Evento 10\",\r\n    \"location\": \"Centro Comercial Alamedas del Sinú\",\r\n    \"address\": \"Cl. 44 #10 - 91\",\r\n    \"city\": \"Montería\",\r\n    \"coordinates\": {\r\n        \"latitude\": \"8.763038\",\r\n        \"longitude\": \"-75.873754\"\r\n    },\r\n    \"startDate\": \"2024-09-01\",\r\n    \"endDate\": \"2024-09-15\",\r\n    \"capacity\": 10,\r\n    \"typeId\": 2,\r\n    \"schedule\": [\r\n        {\r\n            \"date\": \"2024-09-01\"\r\n        },\r\n        {\r\n            \"date\": \"2024-09-08\"\r\n        },\r\n        {\r\n            \"date\": \"2024-09-15\"\r\n        }\r\n    ],\r\n    \"nearPlaces\": [\r\n        {\r\n            \"name\": \"Lugar 1\",\r\n            \"address\": \"Dirección 1\",\r\n            \"coordinates\": {\r\n                \"latitude\": \"111\",\r\n                \"longitude\": \"222\"\r\n            }\r\n        }\r\n    ],\r\n    \"createdBy\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/events/12",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"events",
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Evento 4\",\r\n  \"description\": \"Evento 4\",\r\n  \"location\": \"Centro Comercial Alamedas del Sinú\",\r\n  \"address\": \"Cl. 44 #10 - 91\",\r\n  \"city\": \"Montería\",\r\n  \"capacity\": 1,\r\n  \"startDate\": \"2024-09-01\",\r\n  \"endDate\": \"2024-09-30\",\r\n  \"typeId\": 2,\r\n  \"schedule\": [\r\n    {\r\n      \"date\": \"2024-09-01\"\r\n    },\r\n    {\r\n      \"date\": \"2024-09-08\"\r\n    },\r\n    {\r\n      \"date\": \"2024-09-30\"\r\n    }\r\n  ],\r\n  \"nearPlaces\": [\r\n    {\r\n      \"name\": \"Lugar 1\",\r\n      \"address\": \"Dirección 1\",\r\n      \"coordinates\": {\r\n        \"latitude\": \"111\",\r\n        \"longitude\": \"222\"\r\n      }\r\n    }\r\n  ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/events",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Upload",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "template",
+									"type": "file",
+									"src": "/C:/Users/jose_/OneDrive/Documents/event-template.xlsx"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/events/upload",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"events",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Template",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{URL}}/events/template",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"events",
+								"template"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reports",
+			"item": [
+				{
+					"name": "Get Reports",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"report\": \"report-by-events-by-day-name\",\r\n    \"params\": {\r\n        \"events\": [1,2,3,4,5,6,7,8]\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/reports",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"reports"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Enrollments",
+			"item": [
+				{
+					"name": "Enroll",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"eventId\": 12,\r\n  \"userId\": 1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/enrollments/enroll",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"enrollments",
+								"enroll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unenroll",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/enrollments/unenroll?eventId=12&userId=2",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"enrollments",
+								"unenroll"
+							],
+							"query": [
+								{
+									"key": "eventId",
+									"value": "12"
+								},
+								{
+									"key": "userId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Enrollments",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/enrollments",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"enrollments"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Attendances",
+			"item": [
+				{
+					"name": "Upload",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "template",
+									"type": "file",
+									"src": "/C:/Users/jose_/OneDrive/Documents/attendance-template.xlsx"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}/attendances/upload",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"attendances",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Template",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{URL}}/attendances/template",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"attendances",
+								"template"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register Attendance",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"eventScheduleId\": 10,\r\n    \"eventEnrollmentId\": 27\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{URL}}/attendances/register",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"attendances",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By Event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/attendances/events/6",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"attendances",
+								"events",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get By User By Event",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/attendances/events/1/6",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"attendances",
+								"events",
+								"1",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{USER_JWT}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}/users",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "http://localhost:8000",
+			"type": "string"
+		},
+		{
+			"key": "USER_JWT",
+			"value": ""
+		}
+	]
+}
