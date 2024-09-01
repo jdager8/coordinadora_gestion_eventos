@@ -17,7 +17,7 @@ class UserRoutes {
     const userUseCase = UserUseCase.getInstance(instance.config);
 
     // GET
-    instance.get<{ Reply: any }>(
+    instance.get<{ Reply: UserDTO[] }>(
       '',
       {
         schema: userSchema.getAll,

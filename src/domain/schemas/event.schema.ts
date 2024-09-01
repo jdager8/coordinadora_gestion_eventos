@@ -407,6 +407,71 @@ const deleteEventSchema = {
   },
 };
 
+const uploadEventSchema = {
+  tags: ['events'],
+  consumes: ['multipart/form-data'],
+  body: {
+    type: 'object',
+    required: ['template'],
+    properties: {
+      template: {
+        isFile: true,
+      },
+    },
+  },
+  response: {
+    201: responseSchema(201, null, {
+      type: 'object',
+      properties: {
+        total: { type: 'number' },
+        totalSaved: { type: 'number' },
+        errors: {
+          type: 'object',
+          properties: {
+            total: { type: 'number' },
+            errors: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  lineNumber: { type: 'number' },
+                  errors: {
+                    type: 'array',
+                    items: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    }),
+    400: responseSchema(400, true),
+    403: responseSchema(403, true),
+    404: responseSchema(404, true),
+    500: responseSchema(500, true),
+  },
+};
+
+const templateEventSchema = {
+  tags: ['events'],
+  response: {
+    200: responseSchema(200, false, {
+      content: {
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': {
+          schema: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    }),
+    403: responseSchema(403, true),
+    404: responseSchema(404, true),
+    500: responseSchema(500, true),
+  },
+};
+
 const updateEventSchema = {
   ...createEventSchema,
   params: {
@@ -425,6 +490,8 @@ const eventSchema = {
   create: createEventSchema,
   update: updateEventSchema,
   delete: deleteEventSchema,
+  upload: uploadEventSchema,
+  template: templateEventSchema,
 };
 
 export { eventSchema };

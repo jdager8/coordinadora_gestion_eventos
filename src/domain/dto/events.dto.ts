@@ -44,6 +44,18 @@ interface EventNearPlacesDTO {
 
 interface CreateEventDTO extends Omit<EventDTO, 'id'> {}
 
+interface UploadResponseDTO {
+  total: number;
+  totalSaved: number;
+  errors: {
+    total: number;
+    errors: {
+      lineNumber: number;
+      errors: string[];
+    }[];
+  };
+}
+
 interface UpdateEventDTO extends Partial<EventDTO> {}
 
 export {
@@ -53,4 +65,5 @@ export {
   EventNearPlacesDTO,
   CreateEventDTO,
   UpdateEventDTO,
+  UploadResponseDTO,
 };

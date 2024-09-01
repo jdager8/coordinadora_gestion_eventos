@@ -9,6 +9,7 @@ import {
   EventDTO,
   EventNearPlacesDTO,
   UpdateEventDTO,
+  UploadResponseDTO,
 } from '../../domain/dto/events.dto';
 import { UserDTO } from '../../domain/dto/users.dto';
 
@@ -18,6 +19,8 @@ import {
 } from '../exceptions/exceptions';
 
 import { DatabaseConfig } from '../../infraestructure/database/postgres/types';
+import FileUtils from '../../helpers/file-utils';
+import { parseDate } from '../../helpers/date-utils';
 
 class EventUseCase {
   private static instance: EventUseCase;
@@ -25,7 +28,7 @@ class EventUseCase {
   private attendanceRepository: AttendanceRepository;
   private mapBoxAPI: MapBoxAPI;
 
-  constructor(config: any) {
+  constructor(config: DatabaseConfig) {
     this.eventRepository = EventRepository.getInstance(config);
     this.attendanceRepository = AttendanceRepository.getInstance(config);
     this.mapBoxAPI = MapBoxAPI.getInstance(config);
@@ -51,6 +54,12 @@ class EventUseCase {
   }
 
   async searchEvents(q: string): Promise<EventDTO[]> {
+    if (!q || q.length < 3) {
+      throw new BadRequestException(
+        'Query parameter is required and must be at least 3 characters',
+      );
+    }
+
     const events = await this.eventRepository.findByName(q);
     // 1. Get coordinates from MapBox API
     for (const event of events) {
@@ -87,6 +96,88 @@ class EventUseCase {
     } else {
       throw new BadRequestException('Invalid event data');
     }
+  }
+
+  async loadEventFromTemplate(
+    file: any,
+    currentUser: UserDTO,
+  ): Promise<UploadResponseDTO> {
+    // Validate the data
+    if (!file) {
+      throw new BadRequestException('Invalid eventa file data');
+    }
+
+    // Load the data
+    const errors: any[] = [];
+    let eventData: any[];
+
+    try {
+      eventData = await FileUtils.excelBufferToJSON(file.toBuffer());
+      for (const [index, event] of eventData.entries()) {
+        const schedule = Object.keys(event).filter((key) =>
+          key.includes('day'),
+        );
+
+        const eventDto = {
+          name: event.name,
+          description: event.description,
+          location: event.location,
+          address: event.address,
+          city: event.city,
+          startDate: parseDate(event.startDate),
+          endDate: parseDate(event.endDate),
+          capacity: event.capacity,
+          typeId: event.type,
+          schedule: schedule.map((key) => ({
+            date: parseDate(event[key]),
+          })),
+          coordinates: {
+            latitude: event.latitude,
+            longitude: event.longitude,
+          },
+          createdBy: currentUser.username,
+          nearPlaces: [],
+        } as unknown as CreateEventDTO;
+
+        const eventEntity = new EventEntity(eventDto as EventDTO);
+
+        const validationErrors: any = {
+          lineNumber: index + 1,
+          errors: [],
+        };
+
+        if (!eventEntity.validateEventDateRange(false)) {
+          validationErrors.errors.push(`Invalid event date range`);
+        }
+
+        if (!eventEntity.validateSchedules(false)) {
+          validationErrors.errors.push(`Invalid event schedules`);
+        }
+
+        if (!eventEntity.validateDuplicatedSchedules(false)) {
+          validationErrors.errors.push(`Duplicated event schedules`);
+        }
+
+        if (validationErrors.errors.length > 0) {
+          errors.push(validationErrors);
+        } else {
+          await this.eventRepository.create(eventDto, currentUser);
+        }
+      }
+    } catch (error) {
+      throw new BadRequestException('Invalid event data');
+    }
+
+    const result: UploadResponseDTO = {
+      total: eventData.length,
+      totalSaved: eventData.length - errors.length,
+      errors: {
+        total: errors.length,
+        errors: errors,
+      },
+    };
+
+    return result;
   }
 
   async update(
