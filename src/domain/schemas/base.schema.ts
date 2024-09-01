@@ -5,6 +5,7 @@ function responseSchema(
 ) {
   return {
     type: 'object',
+    description: `Response status code: ${statusCode}`,
     properties: {
       statusCode: { type: 'number', default: statusCode },
       message: { type: 'string' },

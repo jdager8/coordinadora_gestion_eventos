@@ -4,12 +4,15 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import AttendanceUseCase from '../../application/use_cases/attendance.usecase';
 
-import { AttendanceDTO } from '../../domain/dto/attendance.dto';
+import {
+  AttendanceDTO,
+  FindByEventIdDTO,
+  FindByUserIdAndEventIdAttendanceDTO,
+  UploadResponseDTO,
+} from '../../domain/dto/attendance.dto';
 import { UserDTO } from '../../domain/dto/users.dto';
 
 import { attendanceSchema } from '../../domain/schemas/attendance.schema';
-import FileUtils from '../../helpers/file-utils';
-import { UnexpectedFile } from '../../application/exceptions/exceptions';
 
 class AttendanceRoutes {
   public prefix_route = '/attendances';
@@ -21,19 +24,61 @@ class AttendanceRoutes {
   ) {
     const attendanceUseCase = AttendanceUseCase.getInstance(instance.config);
 
+    instance.get<{ Params: { id: number }; Reply: FindByEventIdDTO[] }>(
+      '/events/:id',
+      {
+        schema: attendanceSchema.findByEventId,
+        preValidation: [instance.authorize, instance.adminUser],
+      },
+      async (request, reply) => {
+        const response = await attendanceUseCase.findByEventId(
+          request.params.id,
+        );
+        reply.send(response);
+      },
+    );
+
+    instance.get<{
+      Params: { eventId: number; userId: number };
+      Reply: FindByUserIdAndEventIdAttendanceDTO[];
+    }>(
+      '/events/:eventId/:userId',
+      {
+        schema: attendanceSchema.findByUserIdAndEventId,
+        preValidation: [instance.authorize, instance.adminUser],
+      },
+      async (request, reply) => {
+        const response = await attendanceUseCase.findByUserIdAndEventId(
+          request.params.userId,
+          request.params.eventId,
+        );
+        reply.send(response);
+      },
+    );
+
     instance.get(
       '/template',
       {
+        schema: attendanceSchema.template,
         preValidation: [instance.authorize, instance.adminUser],
       },
       async (_request, reply) => {
-        const file = fs.createReadStream('attendanceTemplate.xlsx', 'utf8');
-        reply.header(
-          'Content-Disposition',
-          'attachment; filename=attendanceTemplate.xlsx',
+        fs.readFile(
+          instance.config.EM_ATTENDANCE_TEMPLATE_FILE,
+          (err, fileBuffer) => {
+            reply.header(
+              'Content-Disposition',
+              `attachment; filename=${instance.config.EM_ATTENDANCE_TEMPLATE_FILE}`,
+            );
+            reply.header(
+              'Content-Type',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            );
+
+            reply.send(err || fileBuffer);
+          },
         );
-        reply.header('Content-Type', 'application/octet-stream');
-        await reply.send(file);
+        return reply;
       },
     );
 
@@ -52,26 +97,24 @@ class AttendanceRoutes {
       },
     );
 
-    instance.post(
+    instance.post<{ Reply: UploadResponseDTO }>(
       '/upload',
       {
         schema: attendanceSchema.upload,
-        preValidation: [instance.authorize, instance.adminUser],
+        preValidation: [
+          instance.authorize,
+          instance.adminUser,
+          instance.validateFile,
+        ],
       },
       async (request: any, reply) => {
         const file = request.body.template;
-        if (file) {
-          if (
-            !FileUtils.validateExtension(
-              file.filename,
-              instance.config.EM_FILE_ALLOWED_EXTENSIONS.split(','),
-            )
-          ) {
-            throw new UnexpectedFile('Invalid file extension');
-          }
+        const response = await attendanceUseCase.loadAttendanceFromTemplate(
+          file,
+          request.user.user as UserDTO,
+        );
 
-          reply.send();
-        }
+        reply.send(response);
       },
     );
 

@@ -1,4 +1,5 @@
 import exceljs from 'exceljs';
+import { UploadAttendaceDTO } from '../domain/dto/attendance.dto';
 
 class FileUtils {
   public static readonly validateExtension = (
@@ -16,7 +17,7 @@ class FileUtils {
 
   public static readonly excelBufferToJSON = (
     buffer: Buffer,
-  ): Promise<object> => {
+  ): Promise<UploadAttendaceDTO[]> => {
     const workbook = new exceljs.Workbook();
     return workbook.xlsx.load(buffer).then(() => {
       const worksheet = workbook.worksheets[0];
@@ -36,7 +37,7 @@ class FileUtils {
           rows.push(rowObject);
         }
       });
-      return rows;
+      return rows as unknown as UploadAttendaceDTO[];
     });
   };
 }

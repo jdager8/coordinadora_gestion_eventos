@@ -4,7 +4,9 @@ import UserUseCase from '../../application/use_cases/user.usecase';
 
 import { UserDTO } from '../../domain/dto/users.dto';
 
-class EventRoutes {
+import { userSchema } from '../../domain/schemas/user.schema';
+
+class UserRoutes {
   public prefix_route = '/users';
 
   routes(
@@ -18,9 +20,7 @@ class EventRoutes {
     instance.get<{ Reply: UserDTO[] }>(
       '',
       {
-        schema: {
-          tags: ['Users'],
-        },
+        schema: userSchema.getAll,
         preValidation: [instance.authorize, instance.adminUser],
       },
       async (_request, reply) => {
@@ -33,4 +33,4 @@ class EventRoutes {
   }
 }
 
-export default EventRoutes;
+export default UserRoutes;

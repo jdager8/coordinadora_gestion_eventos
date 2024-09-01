@@ -1,19 +1,19 @@
 import EnrollmentRepository from '../../infraestructure/repositories/enrollment.repository';
+import UserRepository from '../../infraestructure/repositories/user.repository';
+import EventRepository from '../../infraestructure/repositories/event.repository';
 
 import {
   CreateEnrollmentDTO,
   EnrollmentDTO,
   UpdateEnrollmentDTO,
 } from '../../domain/dto/enrollment.dto';
-import { UserDTO } from '../../domain/dto/users.dto';
 
-import { DatabaseConfig } from '../../infraestructure/database/postgres/types';
-import EventRepository from '../../infraestructure/repositories/event.repository';
 import {
   BadRequestException,
   NotFoundException,
 } from '../exceptions/exceptions';
-import UserRepository from '../../infraestructure/repositories/user.repository';
+
+import { DatabaseConfig } from '../../infraestructure/database/postgres/types';
 
 class EnrollmentUseCase {
   private static instance: EnrollmentUseCase;
@@ -32,6 +32,10 @@ class EnrollmentUseCase {
       this.instance = new EnrollmentUseCase(config);
     }
     return this.instance;
+  }
+
+  async findAll(): Promise<EnrollmentDTO[]> {
+    return this.enrollmentRepository.findAll();
   }
 
   async enrollUser(enrollment: CreateEnrollmentDTO): Promise<any> {

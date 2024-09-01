@@ -7,10 +7,7 @@ import {
 } from '../../domain/dto/events.dto';
 import { UserDTO } from '../../domain/dto/users.dto';
 
-import {
-  BadRequestException,
-  NotFoundException,
-} from '../../application/exceptions/exceptions';
+import { BadRequestException } from '../../application/exceptions/exceptions';
 
 import { DatabaseConfig } from '../database/postgres/types';
 
@@ -89,7 +86,7 @@ class EventRepository {
     return eventsData;
   }
 
-  async findById(id: number): Promise<EventDTO> {
+  async findById(id: number): Promise<EventDTO | null> {
     // 1. Find the event by id
     const event = await this.db.executeQuery(
       `SELECT
@@ -147,7 +144,7 @@ class EventRepository {
     if (event.rows.length === 1) {
       return event.rows[0].event_data as EventDTO;
     }
-    throw new NotFoundException(`Event not found: ${id}`);
+    return null;
   }
 
   async findByName(q: string): Promise<EventDTO[]> {
@@ -209,6 +206,67 @@ class EventRepository {
     );
 
     return eventsData;
+  }
+
+  async findByScheduleId(scheduleId: number): Promise<EventDTO | null> {
+    // 1. Find the event by schedule id
+    const event = await this.db.executeQuery(
+      `SELECT
+        json_build_object(
+          'id', e.id,
+          'name', e.name,
+          'description', e.description,
+          'location', e.location,
+          'address', e.address,
+          'city', e.city,
+          'coordinates', jsonb_build_object(
+            'latitude', e.latitude,
+            'longitude', e.longitude
+          ),
+          'startDate', e.start_date,
+          'endDate', e.end_date,
+          'capacity', e.capacity,
+          'registeredCount', e.registered_count,
+          'eventType', json_build_object(
+            'id', et.id,
+            'type', et.type
+          ),
+          'schedule', json_agg(
+            json_build_object(
+              'id', es.id,
+              'date', es.date
+            )
+          ),
+          'nearPlaces', json_agg(DISTINCT
+            jsonb_build_object(
+              'id', enp.id,
+              'name', enp.name,
+              'address', enp.address,
+              'coordinates', jsonb_build_object(
+                'latitude', enp.latitude,
+                'longitude', enp.longitude
+              )
+            )
+          ),
+          'createdBy', u.username
+        ) AS event_data
+      FROM
+        events e
+        LEFT JOIN events_types et ON e.id_events_types = et.id
+        LEFT JOIN events_schedule es ON e.id = es.id_events
+        LEFT JOIN events_near_places enp ON e.id = enp.id_events
+        LEFT JOIN users u ON e.created_by = u.id
+      WHERE es.id = $1
+      GROUP BY
+        e.id, et.id, u.username`,
+      [scheduleId],
+    );
+
+    // 2. Return the event
+    if (event.rows.length === 1) {
+      return event.rows[0].event_data as EventDTO;
+    }
+    return null;
   }
 
   // CREATE
@@ -412,7 +470,7 @@ class EventRepository {
       [id],
     );
 
-    if (result.rowCount !== 0) {
+    if (result.rows.length !== 0) {
       throw new BadRequestException('The event could not be deleted');
     } else {
       return;

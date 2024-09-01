@@ -3,10 +3,11 @@ import { bbox } from '@turf/bbox';
 import { AllGeoJSON, point } from '@turf/helpers';
 import { buffer } from '@turf/buffer';
 
+import { EventNearPlacesDTO } from '../../domain/dto/events.dto';
+
 import { MapBoxException } from '../../application/exceptions/exceptions';
 
-import FormatString from '../../helpers/format.string';
-import { EventNearPlacesDTO } from '../../domain/dto/events.dto';
+import StringUtils from '../../helpers/string-utils';
 
 class MapBoxAPI {
   private static instance: MapBoxAPI;
@@ -34,7 +35,7 @@ class MapBoxAPI {
   async getCoordinates(
     address: string,
   ): Promise<{ latitude: string; longitude: string } | undefined> {
-    const url = FormatString.templateString(this.API_URL, [address]);
+    const url = StringUtils.templateString(this.API_URL, [address]);
 
     try {
       const response = await axios.get(url, {
@@ -60,7 +61,7 @@ class MapBoxAPI {
     latitude: string,
     longitude: string,
   ): Promise<EventNearPlacesDTO | undefined> {
-    const url = FormatString.templateString(this.API_URL, [
+    const url = StringUtils.templateString(this.API_URL, [
       `${longitude}, ${latitude}`,
     ]);
 

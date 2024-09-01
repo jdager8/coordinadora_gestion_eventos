@@ -1,13 +1,5 @@
 import PostgresDatabase from '../database/postgres/postgres.db';
 
-import { CreateEventDTO, EventDTO } from '../../domain/dto/events.dto';
-import { UserDTO } from '../../domain/dto/users.dto';
-
-import {
-  BadRequestException,
-  NotFoundException,
-} from '../../application/exceptions/exceptions';
-
 import { DatabaseConfig } from '../database/postgres/types';
 
 class EventRepository {

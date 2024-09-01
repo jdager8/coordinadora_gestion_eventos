@@ -18,6 +18,18 @@ class EnrollmentRoutes {
   ) {
     const enrollmentUseCase = EnrollmentUseCase.getInstance(instance.config);
 
+    instance.get(
+      '',
+      {
+        schema: enrollmentSchema.getAll,
+        preValidation: [instance.authorize],
+      },
+      async (_request, reply) => {
+        const response = await enrollmentUseCase.findAll();
+        reply.send(response);
+      },
+    );
+
     instance.post<{ Body: CreateEnrollmentDTO }>(
       '/enroll',
       {
@@ -30,14 +42,14 @@ class EnrollmentRoutes {
       },
     );
 
-    instance.post<{ Body: UpdateEnrollmentDTO }>(
+    instance.delete<{ Querystring: UpdateEnrollmentDTO }>(
       '/unenroll',
       {
         schema: enrollmentSchema.unenroll,
         preValidation: [instance.authorize],
       },
       async (request, reply) => {
-        const response = await enrollmentUseCase.unenrollUser(request.body);
+        const response = await enrollmentUseCase.unenrollUser(request.query);
         reply.code(204).send(response);
       },
     );

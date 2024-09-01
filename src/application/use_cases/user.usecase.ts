@@ -2,10 +2,9 @@ import UserRepository from '../../infraestructure/repositories/user.repository';
 
 import { UserDTO } from '../../domain/dto/users.dto';
 
-import PasswordHash from '../../helpers/password.hash';
-
 import { BadRequestException } from '../exceptions/exceptions';
 
+import EncryptUtils from '../../helpers/encrypt-utils';
 class UserUseCase {
   private static instance: UserUseCase;
   private userRepository: UserRepository;
@@ -31,7 +30,7 @@ class UserUseCase {
 
     // 2. Verify password
     if (user.password) {
-      const isValid = await PasswordHash.compare(password, user.password);
+      const isValid = await EncryptUtils.compare(password, user.password);
       if (isValid) {
         return user;
       }

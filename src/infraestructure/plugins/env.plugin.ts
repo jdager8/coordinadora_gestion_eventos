@@ -24,6 +24,7 @@ declare module 'fastify' {
       EM_FILE_SIZE_LIMIT: number;
       EM_FILE_LIMIT: number;
       EM_FILE_ALLOWED_EXTENSIONS: string;
+      EM_ATTENDANCE_TEMPLATE_FILE: string;
     };
   }
 }
@@ -55,6 +56,7 @@ function fastifyEnvPlugin(
       'EM_FILE_SIZE_LIMIT',
       'EM_FILE_LIMIT',
       'EM_FILE_ALLOWED_EXTENSIONS',
+      'EM_ATTENDANCE_TEMPLATE_FILE',
     ],
     properties: {
       EM_DB_HOST: {
@@ -112,6 +114,9 @@ function fastifyEnvPlugin(
         type: 'number',
       },
       EM_FILE_ALLOWED_EXTENSIONS: {
+        type: 'string',
+      },
+      EM_ATTENDANCE_TEMPLATE_FILE: {
         type: 'string',
       },
     },

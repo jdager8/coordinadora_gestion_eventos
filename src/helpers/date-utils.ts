@@ -1,4 +1,11 @@
-import { isAfter, isValid, isWithinInterval, parseISO } from 'date-fns';
+import {
+  isAfter,
+  isEqual,
+  isValid,
+  isWithinInterval,
+  parseISO,
+  format,
+} from 'date-fns';
 
 interface DateRange {
   start: Date | string;
@@ -26,6 +33,16 @@ function parseDate(date: string | Date): Date {
   }
 }
 
+function areEquals(leftDate: Date | string, rightDate: Date | string): boolean {
+  const parsedDate1 = parseDate(leftDate);
+  const parsedDate2 = parseDate(rightDate);
+  const date1 = new Date(parsedDate1);
+  const date2 = new Date(parsedDate2);
+  date1.setUTCHours(0, 0, 0, 0);
+  date2.setUTCHours(0, 0, 0, 0);
+  return isEqual(date1, date2);
+}
+
 function isLaterThan(date: Date | string, comparison: Date | string): boolean {
   const parsedDate = parseDate(date);
   const parsedComparison = parseDate(comparison);
@@ -36,6 +53,11 @@ function isValidRange(range: DateRange): boolean {
   const parsedStart = parseDate(range.start);
   const parsedEnd = parseDate(range.end);
   return isLaterThan(parsedEnd, parsedStart);
+}
+
+function dayName(date: Date): string {
+  const parsedDate = parseDate(date);
+  return format(parsedDate, 'EEEE');
 }
 
 function doesDateFallsWithinRange(
@@ -53,4 +75,11 @@ function doesDateFallsWithinRange(
   return isWithinInterval(parsedDate, { start: parsedStart, end: parsedEnd });
 }
 
-export { parseDate, isLaterThan, isValidRange, doesDateFallsWithinRange };
+export {
+  parseDate,
+  isLaterThan,
+  isValidRange,
+  doesDateFallsWithinRange,
+  areEquals,
+  dayName,
+};

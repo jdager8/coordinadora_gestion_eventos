@@ -3,7 +3,7 @@ import PostgresDatabase from '../database/postgres/postgres.db';
 import { UserDTO } from '../../domain/dto/users.dto';
 import { RegisterDTO } from '../../domain/dto/auth.dto';
 
-import PasswordHash from '../../helpers/password.hash';
+import EncryptUtils from '../../helpers/encrypt-utils';
 
 import {
   BadRequestException,
@@ -93,7 +93,7 @@ class UserRepository {
     }
   }
 
-  async findById(id: number): Promise<UserDTO> {
+  async findById(id: number): Promise<UserDTO | null> {
     // 1. Find the user by id
     const user = await this.db.executeQuery(
       `SELECT
@@ -125,7 +125,7 @@ class UserRepository {
     if (user.rows.length === 1) {
       return user.rows[0].user_data as UserDTO;
     } else {
-      throw new NotFoundException(`User not found: ${id}`);
+      return null;
     }
   }
 
@@ -153,7 +153,7 @@ class UserRepository {
       // 2. Create a new user
       let hashedPassword = '';
       if (user.password) {
-        hashedPassword = await PasswordHash.hash(user.password);
+        hashedPassword = await EncryptUtils.hash(user.password);
       }
 
       newUser = await this.db.executeQuery(
@@ -173,7 +173,12 @@ class UserRepository {
     }
 
     // 3. Return the new user
-    return await this.findById(newUser.rows[0].id);
+    const returnUser = await this.findById(newUser.rows[0].id);
+    if (returnUser) {
+      return returnUser;
+    } else {
+      throw new BadRequestException('Error creating user');
+    }
   }
 }
 
