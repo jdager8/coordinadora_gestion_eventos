@@ -5,7 +5,9 @@ import {
   FastifyRequest,
 } from 'fastify';
 import fastifyPlugin from 'fastify-plugin';
+
 import { UserDTO } from '../../domain/dto/users.dto';
+
 import { ForbiddenException } from '../../application/exceptions/exceptions';
 
 declare module 'fastify' {

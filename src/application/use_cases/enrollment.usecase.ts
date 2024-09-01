@@ -34,6 +34,10 @@ class EnrollmentUseCase {
     return this.instance;
   }
 
+  async findAll(): Promise<EnrollmentDTO[]> {
+    return this.enrollmentRepository.findAll();
+  }
+
   async enrollUser(enrollment: CreateEnrollmentDTO): Promise<any> {
     if (!enrollment.userId || !enrollment.eventId) {
       throw new BadRequestException('User ID and Event ID are required');

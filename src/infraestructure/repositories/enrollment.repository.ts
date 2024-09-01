@@ -25,10 +25,100 @@ class EnrollmentRepository {
   }
 
   // READ
+
+  async findAll(): Promise<EnrollmentDTO[]> {
+    const result = await this.db.executeQuery(
+      `
+        SELECT
+          json_build_object(
+            'id', ee.id,
+            'event', json_build_object(
+              'id', e.id,
+              'name', e.name,
+              'description', e.description,
+              'location', e.location,
+              'address', e.address,
+              'coordinates', json_build_object(
+                'latitude', e.latitude,
+                'longitude', e.longitude
+              ),
+              'start_date', e.start_date,
+              'end_date', e.end_date
+            ),
+            'user', json_build_object(
+              'id', u.id,
+              'username', u.username,
+              'person', json_build_object(
+                'id', p.id,
+                'firstname', p.firstname,
+                'lastname', p.lastname,
+                'email', p.email,
+                'id_number', p.id_number
+              )
+            )
+          ) AS enrollment_data
+        FROM
+          events_enrollments ee
+          LEFT JOIN events e ON ee.id_events = e.id
+          LEFT JOIN users u ON ee.id_users = u.id
+          LEFT JOIN persons p ON u.id_persons = p.id`,
+    );
+
+    return result.rows.map((enrollment) => enrollment.enrollment_data);
+  }
+
+  async findById(id: number): Promise<EnrollmentDTO | null> {
+    const result = await this.db.executeQuery(
+      `
+        SELECT
+          json_build_object(
+            'id', ee.id,
+            'event', json_build_object(
+              'id', e.id,
+              'name', e.name,
+              'description', e.description,
+              'location', e.location,
+              'address', e.address,
+              'coordinates', json_build_object(
+                'latitude', e.latitude,
+                'longitude', e.longitude
+              ),
+              'start_date', e.start_date,
+              'end_date', e.end_date
+            ),
+            'user', json_build_object(
+              'id', u.id,
+              'username', u.username,
+              'person', json_build_object(
+                'id', p.id,
+                'firstname', p.firstname,
+                'lastname', p.lastname,
+                'email', p.email,
+                'id_number', p.id_number
+              )
+            )
+          ) AS enrollment_data
+        FROM
+          events_enrollments ee
+          LEFT JOIN events e ON ee.id_events = e.id
+          LEFT JOIN users u ON ee.id_users = u.id
+          LEFT JOIN persons p ON u.id_persons = p.id
+        WHERE
+          ee.id = $1`,
+      [id],
+    );
+
+    if (result.rowCount !== 1) {
+      return null;
+    } else {
+      return result.rows[0].enrollment_data;
+    }
+  }
+
   async findByUserIdAndEventId(
     idEvent: number,
     idUser: number,
-  ): Promise<EnrollmentDTO> {
+  ): Promise<EnrollmentDTO | null> {
     const result = await this.db.executeQuery(
       `
         SELECT
@@ -71,7 +161,7 @@ class EnrollmentRepository {
     );
 
     if (result.rowCount !== 1) {
-      throw new BadRequestException('Enrollment not found');
+      return null;
     } else {
       return result.rows[0].enrollment_data;
     }
@@ -90,13 +180,11 @@ class EnrollmentRepository {
 
     if (result.rowCount !== 1) {
       throw new BadRequestException('The enrollment could not be created');
-    } else {
-      if (enrollment.eventId && enrollment.userId) {
-        return await this.findByUserIdAndEventId(
-          enrollment.eventId,
-          enrollment.userId,
-        );
-      }
+    } else if (enrollment.eventId && enrollment.userId) {
+      return await this.findByUserIdAndEventId(
+        enrollment.eventId,
+        enrollment.userId,
+      );
     }
   }
 
@@ -114,7 +202,7 @@ class EnrollmentRepository {
       [eventId, userID],
     );
 
-    if (result.rowCount !== 0) {
+    if (result.rows.length !== 0) {
       throw new BadRequestException('The enrollment could not be deleted');
     } else {
       return;

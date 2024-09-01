@@ -1,4 +1,10 @@
-import { isAfter, isValid, isWithinInterval, parseISO } from 'date-fns';
+import {
+  isAfter,
+  isEqual,
+  isValid,
+  isWithinInterval,
+  parseISO,
+} from 'date-fns';
 
 interface DateRange {
   start: Date | string;
@@ -24,6 +30,16 @@ function parseDate(date: string | Date): Date {
   } else {
     throw new Error('Invalid input: Expected a dateString or Date object');
   }
+}
+
+function areEquals(leftDate: Date | string, rightDate: Date | string): boolean {
+  const parsedDate1 = parseDate(leftDate);
+  const parsedDate2 = parseDate(rightDate);
+  const date1 = new Date(parsedDate1);
+  const date2 = new Date(parsedDate2);
+  date1.setUTCHours(0, 0, 0, 0);
+  date2.setUTCHours(0, 0, 0, 0);
+  return isEqual(date1, date2);
 }
 
 function isLaterThan(date: Date | string, comparison: Date | string): boolean {
@@ -53,4 +69,10 @@ function doesDateFallsWithinRange(
   return isWithinInterval(parsedDate, { start: parsedStart, end: parsedEnd });
 }
 
-export { parseDate, isLaterThan, isValidRange, doesDateFallsWithinRange };
+export {
+  parseDate,
+  isLaterThan,
+  isValidRange,
+  doesDateFallsWithinRange,
+  areEquals,
+};

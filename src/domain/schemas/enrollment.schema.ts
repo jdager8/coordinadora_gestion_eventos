@@ -32,7 +32,7 @@ const enrollSchema = {
 
 const unenrollSchema = {
   tags: ['enrollments'],
-  body: {
+  query: {
     type: 'object',
     required: ['eventId', 'userId'],
     properties: {

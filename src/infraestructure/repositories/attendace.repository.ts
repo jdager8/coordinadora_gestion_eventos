@@ -34,7 +34,6 @@ class AttendanceRepository {
           a.id,
           a.id_events_enrollments,
           a.id_events_schedule,
-          a.created_at,
           a.created_by
         FROM
           events_attendance a
@@ -45,6 +44,32 @@ class AttendanceRepository {
 
     if (result.rowCount !== 1) {
       throw new NotFoundException('Attendance not found');
+    } else {
+      return result.rows[0];
+    }
+  }
+
+  async findByEnrollmentAndSchedule(
+    enrollmentId: number,
+    scheduleId: number,
+  ): Promise<AttendanceDTO | null> {
+    const result = await this.db.executeQuery(
+      `
+        SELECT
+          a.id,
+          a.id_events_enrollments,
+          a.id_events_schedule,
+          a.created_by
+        FROM
+          events_attendance a
+        WHERE
+          a.id_events_enrollments = $1
+          AND a.id_events_schedule = $2`,
+      [enrollmentId, scheduleId],
+    );
+
+    if (result.rowCount !== 1) {
+      return null;
     } else {
       return result.rows[0];
     }
@@ -61,9 +86,9 @@ class AttendanceRepository {
           id_events_enrollments,
           id_events_schedule,
           created_by
-        ) VALUES (
-          (SELECT id FROM events_enrollments WHERE id_events = $1 AND id_users = $2)
-        )`,
+        )
+          VALUES ( $1, $2, $3)
+        RETURNING id`,
       [attendace.eventEnrollmentId, attendace.eventScheduleId, user.id],
     );
 

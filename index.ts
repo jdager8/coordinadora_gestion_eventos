@@ -10,6 +10,7 @@ import MultiPartPlugin from './src/infraestructure/plugins/multipart.plugin';
 import EnvPlugin from './src/infraestructure/plugins/env.plugin';
 import JwtPlugin from './src/infraestructure/plugins/jwt.plugin';
 import RbacPlugin from './src/infraestructure/plugins/rbac.plugin';
+import FilePlugin from './src/infraestructure/plugins/file.plugin';
 
 const app = new App();
 
@@ -21,6 +22,7 @@ async function bootstrap() {
       SwaggerPlugin,
       JwtPlugin,
       RbacPlugin,
+      FilePlugin,
     ],
     [Symbol.for('routes')]: [
       AuthRoutes,

@@ -41,8 +41,7 @@ class App {
       this.runMigrations();
       this.listen();
     } catch (error) {
-      this.server.log.error('Error initializing app');
-      console.error(error);
+      this.server.log.error(`Error initializing app ${error}`);
       process.exit(1);
     }
   }
@@ -53,8 +52,7 @@ class App {
       const db = PostgresDatabase.getInstance(this.server.config);
       db.migrate(this.server.config);
     } catch (error) {
-      this.server.log.error('Error running migrations');
-      console.error(error);
+      this.server.log.error(`Error running migrations ${error}`);
       process.exit(1);
     }
   }
@@ -87,12 +85,15 @@ class App {
   }
 
   listen(): void {
-    this.server.listen({ port: this.port }, (err, _address) => {
-      if (err) {
-        this.server.log.error(err);
-        process.exit(1);
-      }
-    });
+    this.server.listen(
+      { port: this.port, host: this.host },
+      (err, _address) => {
+        if (err) {
+          this.server.log.error(err);
+          process.exit(1);
+        }
+      },
+    );
   }
 }
 

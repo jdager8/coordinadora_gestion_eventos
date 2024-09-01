@@ -17,10 +17,6 @@ import {
   BadRequestException,
   NotFoundException,
 } from '../exceptions/exceptions';
-import {
-  doesDateFallsWithinRange,
-  isValidRange,
-} from '../../helpers/date-utils';
 
 class EventUseCase {
   private static instance: EventUseCase;
@@ -46,7 +42,11 @@ class EventUseCase {
   }
 
   async findById(id: number): Promise<EventDTO> {
-    return this.eventRepository.findById(id);
+    const event = await this.eventRepository.findById(id);
+    if (!event) {
+      throw new NotFoundException(`Event not found: ${id}`);
+    }
+    return event;
   }
 
   async searchEvents(q: string): Promise<EventDTO[]> {
@@ -141,11 +141,12 @@ class EventUseCase {
   async delete(id: number, currentUser: UserDTO): Promise<void> {
     // 1. Check if the event exists
     const event = await this.eventRepository.findById(id);
-    const eventEntity = new EventEntity(event);
 
     if (!event) {
       throw new NotFoundException(`Event not found: ${id}`);
     }
+
+    const eventEntity = new EventEntity(event);
 
     //2. Check if the user is the owner of the event
     if (event.createdBy !== currentUser.username) {
@@ -168,9 +169,6 @@ class EventUseCase {
     } else {
       throw new BadRequestException('Invalid event data');
     }
-
-    //6. Delete the event
-    return this.eventRepository.delete(id);
   }
 }
 

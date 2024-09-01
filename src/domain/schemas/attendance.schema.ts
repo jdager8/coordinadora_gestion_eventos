@@ -4,15 +4,15 @@ const registerAttendanceSchema = {
   tags: ['attendances'],
   body: {
     type: 'object',
-    required: ['eventId', 'enrollmentId'],
+    required: ['eventScheduleId', 'eventEnrollmentId'],
     properties: {
-      eventId: {
+      eventScheduleId: {
         type: 'number',
-        errorMessage: 'The eventId must be an integer',
+        errorMessage: 'The eventScheduleId must be an integer',
       },
-      enrollmentId: {
+      eventEnrollmentId: {
         type: 'number',
-        errorMessage: 'The enrollmentId must be an integer',
+        errorMessage: 'The eventEnrollmentId must be an integer',
       },
     },
   },
@@ -21,8 +21,8 @@ const registerAttendanceSchema = {
       type: 'object',
       properties: {
         id: { type: 'number', default: 1 },
-        eventId: { type: 'number', default: 1 },
-        enrollmentId: { type: 'number', default: 1 },
+        eventScheduleId: { type: 'number', default: 1 },
+        eventEnrollmentId: { type: 'number', default: 1 },
         createdBy: { type: 'string' },
       },
     },
@@ -45,7 +45,23 @@ const uploadAttendanceSchema = {
     },
   },
   response: {
-    200: responseSchema(200, false),
+    200: {
+      type: 'object',
+      properties: {
+        total: { type: 'number' },
+        totalSaved: { type: 'number' },
+        errors: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              lineNumber: { type: 'number' },
+              errors: { type: 'array', items: { type: 'string' } },
+            },
+          },
+        },
+      },
+    },
     400: responseSchema(400, true),
     500: responseSchema(500, true),
   },

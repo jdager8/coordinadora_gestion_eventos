@@ -4,12 +4,13 @@ import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import AttendanceUseCase from '../../application/use_cases/attendance.usecase';
 
-import { AttendanceDTO } from '../../domain/dto/attendance.dto';
+import {
+  AttendanceDTO,
+  UploadResponseDTO,
+} from '../../domain/dto/attendance.dto';
 import { UserDTO } from '../../domain/dto/users.dto';
 
 import { attendanceSchema } from '../../domain/schemas/attendance.schema';
-import FileUtils from '../../helpers/file-utils';
-import { UnexpectedFile } from '../../application/exceptions/exceptions';
 
 class AttendanceRoutes {
   public prefix_route = '/attendances';
@@ -52,26 +53,24 @@ class AttendanceRoutes {
       },
     );
 
-    instance.post(
+    instance.post<{ Reply: UploadResponseDTO }>(
       '/upload',
       {
         schema: attendanceSchema.upload,
-        preValidation: [instance.authorize, instance.adminUser],
+        preValidation: [
+          instance.authorize,
+          instance.adminUser,
+          instance.validateFile,
+        ],
       },
       async (request: any, reply) => {
         const file = request.body.template;
-        if (file) {
-          if (
-            !FileUtils.validateExtension(
-              file.filename,
-              instance.config.EM_FILE_ALLOWED_EXTENSIONS.split(','),
-            )
-          ) {
-            throw new UnexpectedFile('Invalid file extension');
-          }
+        const response = await attendanceUseCase.loadAttendanceFromTemplate(
+          file,
+          request.user.user as UserDTO,
+        );
 
-          reply.send();
-        }
+        reply.send(response);
       },
     );
 

@@ -93,7 +93,7 @@ class UserRepository {
     }
   }
 
-  async findById(id: number): Promise<UserDTO> {
+  async findById(id: number): Promise<UserDTO | null> {
     // 1. Find the user by id
     const user = await this.db.executeQuery(
       `SELECT
@@ -125,7 +125,7 @@ class UserRepository {
     if (user.rows.length === 1) {
       return user.rows[0].user_data as UserDTO;
     } else {
-      throw new NotFoundException(`User not found: ${id}`);
+      return null;
     }
   }
 
@@ -173,7 +173,12 @@ class UserRepository {
     }
 
     // 3. Return the new user
-    return await this.findById(newUser.rows[0].id);
+    const returnUser = await this.findById(newUser.rows[0].id);
+    if (returnUser) {
+      return returnUser;
+    } else {
+      throw new BadRequestException('Error creating user');
+    }
   }
 }
 
