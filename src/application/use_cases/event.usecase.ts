@@ -113,6 +113,7 @@ class EventUseCase {
 
     try {
       eventData = await FileUtils.excelBufferToJSON(file.toBuffer());
+      console.log(eventData);
       for (const [index, event] of eventData.entries()) {
         const schedule = Object.keys(event).filter((key) =>
           key.includes('day'),

@@ -93,7 +93,7 @@ class AttendanceRoutes {
       async (request, reply) => {
         const response = await attendanceUseCase.registerAttendance(
           request.body,
-          request.user as UserDTO,
+          (request.user as any).user as UserDTO,
         );
         reply.send(response);
       },

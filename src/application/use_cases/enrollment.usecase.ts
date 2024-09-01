@@ -34,7 +34,7 @@ class EnrollmentUseCase {
     return this.instance;
   }
 
-  async findAll(): Promise<EnrollmentDTO[]> {
+  async findAll(): Promise<Partial<EnrollmentDTO>[]> {
     return this.enrollmentRepository.findAll();
   }
 
