@@ -34,7 +34,6 @@ class UserRepository {
         json_build_object(
           'id', u.id,
           'username', u.username,
-          'password', u.password,
           'role', json_build_object(
             'id', u.id_roles,
             'role', r.role
@@ -44,7 +43,7 @@ class UserRepository {
             'firstname', p.firstname,
             'lastname', p.lastname,
             'email', p.email,
-            'id_number', p.id_number
+            'idNumber', p.id_number
           )
         ) AS user_data
        FROM

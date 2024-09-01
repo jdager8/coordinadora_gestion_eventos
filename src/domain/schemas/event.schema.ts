@@ -1,4 +1,3 @@
-import { create } from 'axios';
 import { responseSchema } from './base.schema';
 
 const createEventSchema = {
