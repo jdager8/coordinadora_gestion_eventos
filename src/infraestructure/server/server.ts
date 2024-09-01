@@ -5,8 +5,8 @@ import { errorHandler } from './error.handler';
 import ResponseParserPlugin from './response.handler';
 class App {
   public server: FastifyInstance;
-  private port: number = 8080;
-  private host: string = 'localhost';
+  private port: number = 3000;
+  private host: string = '0.0.0.0';
 
   constructor() {
     this.server = fastify({
