@@ -1,5 +1,4 @@
 import fs from 'fs';
-
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import AttendanceUseCase from '../../application/use_cases/attendance.usecase';

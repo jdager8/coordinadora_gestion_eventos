@@ -3,33 +3,28 @@ import { responseSchema } from './base.schema';
 const getAllSchema = {
   tags: ['users'],
   response: {
-    200: responseSchema(200, null, {
-      type: 'object',
-      properties: {
-        users: {
-          type: 'array',
-          items: {
+    200: responseSchema(200, false, {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number', default: 1 },
+          username: { type: 'string', default: 'username' },
+          role: {
             type: 'object',
             properties: {
               id: { type: 'number', default: 1 },
-              username: { type: 'string' },
-              role: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number', default: 1 },
-                  role: { type: 'string' },
-                },
-              },
-              person: {
-                type: 'object',
-                properties: {
-                  id: { type: 'number', default: 1 },
-                  firstName: { type: 'string' },
-                  lastName: { type: 'string' },
-                  email: { type: 'string' },
-                  idNumber: { type: 'string' },
-                },
-              },
+              role: { type: 'string', default: 'role' },
+            },
+          },
+          person: {
+            type: 'object',
+            properties: {
+              id: { type: 'number', default: 1 },
+              firstname: { type: 'string', default: 'firstname' },
+              lastname: { type: 'string', default: 'lastname' },
+              email: { type: 'string', default: 'email' },
+              idNumber: { type: 'string', default: 'idNumber' },
             },
           },
         },

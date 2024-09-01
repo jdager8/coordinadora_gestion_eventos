@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import EventUseCase from '../../application/use_cases/event.usecase';
@@ -54,6 +55,32 @@ class EventRoutes {
       },
     );
 
+    instance.get(
+      '/template',
+      {
+        schema: eventSchema.template,
+        preValidation: [instance.authorize, instance.adminUser],
+      },
+      async (_request, reply) => {
+        fs.readFile(
+          instance.config.EM_EVENT_TEMPLATE_FILE,
+          (err, fileBuffer) => {
+            reply.header(
+              'Content-Disposition',
+              `attachment; filename=${instance.config.EM_EVENT_TEMPLATE_FILE}`,
+            );
+            reply.header(
+              'Content-Type',
+              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            );
+
+            reply.send(err || fileBuffer);
+          },
+        );
+        return reply;
+      },
+    );
+
     // POST
     instance.post<{ Body: EventDTO; Reply: EventDTO }>(
       '',
@@ -66,6 +93,27 @@ class EventRoutes {
           request.body,
           (request.user as any).user as UserDTO,
         );
+        reply.send(response);
+      },
+    );
+
+    instance.post(
+      '/upload',
+      {
+        schema: eventSchema.upload,
+        preValidation: [
+          instance.authorize,
+          instance.adminUser,
+          instance.validateFile,
+        ],
+      },
+      async (request: any, reply) => {
+        const file = request.body.template;
+        const response = await eventUseCase.loadEventFromTemplate(
+          file,
+          request.user.user as UserDTO,
+        );
+
         reply.send(response);
       },
     );
