@@ -6,6 +6,8 @@ import UserRepository from '../../infraestructure/repositories/user.repository';
 import {
   AttendanceDTO,
   CreateAttendanceDTO,
+  FindByEventIdDTO,
+  FindByUserIdAndEventIdAttendanceDTO,
   UploadResponseDTO,
 } from '../../domain/dto/attendance.dto';
 import { UserDTO } from '../../domain/dto/users.dto';
@@ -14,6 +16,7 @@ import { BadRequestException } from '../exceptions/exceptions';
 
 import FileUtils from '../../helpers/file-utils';
 import { areEquals, parseDate } from '../../helpers/date-utils';
+
 import { AttendaceValidationErrors } from '../../domain/interfaces/attendance.interface';
 import { DatabaseConfig } from '../../infraestructure/database/postgres/types';
 
@@ -36,6 +39,17 @@ class AttendanceUseCase {
       this.instance = new AttendanceUseCase(config);
     }
     return this.instance;
+  }
+
+  async findByEventId(eventId: number): Promise<FindByEventIdDTO[]> {
+    return this.attendanceRepository.findByEventId(eventId);
+  }
+
+  async findByUserIdAndEventId(
+    eventId: number,
+    userId: number,
+  ): Promise<FindByUserIdAndEventIdAttendanceDTO[]> {
+    return this.attendanceRepository.findByUserIdAndEventId(userId, eventId);
   }
 
   async registerAttendance(

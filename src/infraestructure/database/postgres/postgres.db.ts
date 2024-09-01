@@ -54,6 +54,8 @@ class PostgresDatabase {
           DATABASE_ERROR.FOREIGN_KEY_CONSTRAINT,
         );
       }
+      console.error(`Error executing query: ${error}`);
+      console.error(query);
       throw new Error(`Error executing query`);
     } finally {
       if (client) {

@@ -4,6 +4,7 @@ import {
   isValid,
   isWithinInterval,
   parseISO,
+  format,
 } from 'date-fns';
 
 interface DateRange {
@@ -54,6 +55,11 @@ function isValidRange(range: DateRange): boolean {
   return isLaterThan(parsedEnd, parsedStart);
 }
 
+function dayName(date: Date): string {
+  const parsedDate = parseDate(date);
+  return format(parsedDate, 'EEEE');
+}
+
 function doesDateFallsWithinRange(
   date: Date | string,
   range: DateRange,
@@ -75,4 +81,5 @@ export {
   isValidRange,
   doesDateFallsWithinRange,
   areEquals,
+  dayName,
 };

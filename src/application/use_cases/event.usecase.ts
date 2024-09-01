@@ -12,11 +12,12 @@ import {
 } from '../../domain/dto/events.dto';
 import { UserDTO } from '../../domain/dto/users.dto';
 
-import { DatabaseConfig } from '../../infraestructure/database/postgres/types';
 import {
   BadRequestException,
   NotFoundException,
 } from '../exceptions/exceptions';
+
+import { DatabaseConfig } from '../../infraestructure/database/postgres/types';
 
 class EventUseCase {
   private static instance: EventUseCase;

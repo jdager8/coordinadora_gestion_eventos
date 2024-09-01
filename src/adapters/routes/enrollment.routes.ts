@@ -21,9 +21,10 @@ class EnrollmentRoutes {
     instance.get(
       '',
       {
+        schema: enrollmentSchema.getAll,
         preValidation: [instance.authorize],
       },
-      async (request, reply) => {
+      async (_request, reply) => {
         const response = await enrollmentUseCase.findAll();
         reply.send(response);
       },

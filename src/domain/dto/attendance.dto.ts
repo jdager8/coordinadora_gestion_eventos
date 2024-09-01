@@ -1,4 +1,5 @@
-import { PersonDTO } from './persons.dto';
+import { EventDTO } from './events.dto';
+import { UserDTO } from './users.dto';
 
 interface AttendanceDTO {
   id?: number;
@@ -30,6 +31,20 @@ interface UploadResponseDTO {
   };
 }
 
+interface FindByEventIdDTO extends Partial<EventDTO> {
+  schedule: Array<{
+    id: number;
+    date: Date;
+    attendance: number;
+    users: Partial<UserDTO>[];
+  }>;
+}
+
+interface FindByUserIdAndEventIdAttendanceDTO
+  extends Partial<FindByEventIdDTO> {
+  user: Partial<UserDTO>[];
+}
+
 interface CreateAttendanceDTO extends Omit<AttendanceDTO, 'id'> {}
 
 export {
@@ -37,4 +52,6 @@ export {
   CreateAttendanceDTO,
   UploadAttendaceDTO,
   UploadResponseDTO,
+  FindByEventIdDTO,
+  FindByUserIdAndEventIdAttendanceDTO,
 };

@@ -1,4 +1,4 @@
-class FormatString {
+class StringUtils {
   public static readonly templateString = (
     template: string,
     data: string[],
@@ -7,4 +7,4 @@ class FormatString {
   };
 }
 
-export default FormatString;
+export default StringUtils;

@@ -3,7 +3,7 @@ import PostgresDatabase from '../database/postgres/postgres.db';
 import { UserDTO } from '../../domain/dto/users.dto';
 import { RegisterDTO } from '../../domain/dto/auth.dto';
 
-import PasswordHash from '../../helpers/password.hash';
+import EncryptUtils from '../../helpers/encrypt-utils';
 
 import {
   BadRequestException,
@@ -153,7 +153,7 @@ class UserRepository {
       // 2. Create a new user
       let hashedPassword = '';
       if (user.password) {
-        hashedPassword = await PasswordHash.hash(user.password);
+        hashedPassword = await EncryptUtils.hash(user.password);
       }
 
       newUser = await this.db.executeQuery(
