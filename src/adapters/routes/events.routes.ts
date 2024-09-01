@@ -1,4 +1,6 @@
+import path from 'path';
 import fs from 'fs';
+
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import EventUseCase from '../../application/use_cases/event.usecase';
@@ -62,21 +64,26 @@ class EventRoutes {
         preValidation: [instance.authorize, instance.adminUser],
       },
       async (_request, reply) => {
-        fs.readFile(
-          `./src/assets/${instance.config.EM_EVENT_TEMPLATE_FILE}`,
-          (err, fileBuffer) => {
-            reply.header(
-              'Content-Disposition',
-              `attachment; filename=${instance.config.EM_EVENT_TEMPLATE_FILE}`,
-            );
-            reply.header(
-              'Content-Type',
-              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            );
-
-            reply.send(err || fileBuffer);
-          },
+        // ENOENT: no such file or directory, open './src/assets/event-template.xlsx'
+        // build the path to the file
+        const filePath = path.join(
+          __dirname,
+          '../../assets',
+          instance.config.EM_EVENT_TEMPLATE_FILE,
         );
+
+        fs.readFile(filePath, (err, fileBuffer) => {
+          reply.header(
+            'Content-Disposition',
+            `attachment; filename=${instance.config.EM_EVENT_TEMPLATE_FILE}`,
+          );
+          reply.header(
+            'Content-Type',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          );
+
+          reply.send(err || fileBuffer);
+        });
         return reply;
       },
     );

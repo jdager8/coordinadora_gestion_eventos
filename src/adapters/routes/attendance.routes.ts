@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { FastifyInstance, FastifyPluginOptions } from 'fastify';
 
 import AttendanceUseCase from '../../application/use_cases/attendance.usecase';
@@ -62,21 +63,23 @@ class AttendanceRoutes {
         preValidation: [instance.authorize, instance.adminUser],
       },
       async (_request, reply) => {
-        fs.readFile(
-          `./src/assets/${instance.config.EM_ATTENDANCE_TEMPLATE_FILE}`,
-          (err, fileBuffer) => {
-            reply.header(
-              'Content-Disposition',
-              `attachment; filename=${instance.config.EM_ATTENDANCE_TEMPLATE_FILE}`,
-            );
-            reply.header(
-              'Content-Type',
-              'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            );
-
-            reply.send(err || fileBuffer);
-          },
+        const filePath = path.join(
+          __dirname,
+          '../../assets',
+          instance.config.EM_ATTENDANCE_TEMPLATE_FILE,
         );
+        fs.readFile(filePath, (err, fileBuffer) => {
+          reply.header(
+            'Content-Disposition',
+            `attachment; filename=${instance.config.EM_ATTENDANCE_TEMPLATE_FILE}`,
+          );
+          reply.header(
+            'Content-Type',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          );
+
+          reply.send(err || fileBuffer);
+        });
         return reply;
       },
     );
