@@ -79,7 +79,7 @@ class AttendanceUseCase {
     }
 
     // Validate if is the user is enrolled in the event
-    if (enrollment.eventId !== event.id) {
+    if (enrollment.event.id !== event.id) {
       throw new BadRequestException(`User is not enrolled in the event`);
     }
 

@@ -5,6 +5,13 @@
 - [Instalación y Ejecución](#instalación-y-ejecución)
   + [Configuración de variables](#configuración-de-variables)
   + [Ejecución](#ejecución)
+- [Notas](#nota)
+- [Recursos](#recursos)
+  + [Video explicando la solución](#video-explicando-la-solución)
+  + [Documentos](#documentos)
+    - [Modelo ER]
+    - [CI/CD - Arquitectura resiliente]
+
 
 # **Consideraciones**
 1. Entendiendo la solución:
@@ -32,12 +39,14 @@
 
   Las asistencias se realizan uno a uno consumiendo el API o masivamente subiendo un archivo en formato XLSX con los datos requeridos.
 
+
+
 # **Instalación y Ejecución**
 
 1.  Clone el repositorio
 
 ```bash
-$ git clone
+$ git clone https://github.com/jdager8/coordinadora_gestion_eventos.git
 ```
 
 ## **Configuración de variables**
@@ -82,4 +91,22 @@ Por defecto las migraciones crearan un usuario con el rol de administrador
 ```bash
 http://localhost:8000/docs
 ```
-Adicionalmente se provee archivo .postman con la defición del API para pruebas.
+Adicionalmente se provee archivo .json con la definición del API para pruebas en Postman.
+
+```bash
+/docs/em.postman_collection.json
+```
+
+## **Documentos**
+- Modelo ER
+![Modelo ER](docs/EMMODEL.png)
+
+- Video
+```bash
+/docs/em.postman_collection.json
+```
+
+- CI/CD - Arquitectura
+```bash
+![Modelo ER](docs/GESTOR_EVENTOS.PDF)
+```

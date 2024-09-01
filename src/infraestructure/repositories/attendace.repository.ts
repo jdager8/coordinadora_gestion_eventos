@@ -165,6 +165,8 @@ class AttendanceRepository {
       [userId, eventId],
     );
 
+    console.log(result.rows);
+
     const attendanceData: FindByUserIdAndEventIdAttendanceDTO[] =
       result.rows.map((row: any) => row.attendance_data);
 
