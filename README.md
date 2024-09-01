@@ -108,5 +108,5 @@ Adicionalmente se provee archivo .json con la definición del API para pruebas e
 
 - CI/CD - Arquitectura
 ```bash
-![Modelo ER](docs/GESTOR_EVENTOS.PDF)
+![Documento](docs/GESTOR_EVENTOS.PDF)
 ```
