@@ -63,7 +63,7 @@ class AttendanceRoutes {
       },
       async (_request, reply) => {
         fs.readFile(
-          instance.config.EM_ATTENDANCE_TEMPLATE_FILE,
+          `./src/assets/${instance.config.EM_ATTENDANCE_TEMPLATE_FILE}`,
           (err, fileBuffer) => {
             reply.header(
               'Content-Disposition',
