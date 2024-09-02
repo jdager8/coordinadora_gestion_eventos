@@ -2,6 +2,8 @@ import { responseSchema } from './base.schema';
 
 const getAllSchema = {
   tags: ['users'],
+  summary: 'List of users',
+  description: 'List of users',
   response: {
     200: responseSchema(200, false, {
       type: 'array',

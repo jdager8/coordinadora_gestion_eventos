@@ -26,7 +26,6 @@ class EnrollmentRoutes {
       },
       async (_request, reply) => {
         const response = await enrollmentUseCase.findAll();
-        console.log(response);
         reply.send(response);
       },
     );

@@ -42,6 +42,12 @@ class EnrollmentRepository {
                 'latitude', e.latitude,
                 'longitude', e.longitude
               ),
+              'schedule', json_agg(
+                json_build_object(
+                  'id', es.id,
+                  'date', es.date
+                )
+              ),
               'start_date', e.start_date,
               'end_date', e.end_date
             ),
@@ -60,8 +66,11 @@ class EnrollmentRepository {
         FROM
           events_enrollments ee
           LEFT JOIN events e ON ee.id_events = e.id
+          LEFT JOIN events_schedule es ON e.id = es.id_events
           LEFT JOIN users u ON ee.id_users = u.id
-          LEFT JOIN persons p ON u.id_persons = p.id`,
+          LEFT JOIN persons p ON u.id_persons = p.id
+        GROUP BY
+          ee.id, e.id, u.id, p.id`,
     );
 
     return result.rows.map((enrollment) => enrollment.enrollment_data);

@@ -2,6 +2,8 @@ import { responseSchema } from './base.schema';
 
 const createEventSchema = {
   tags: ['events'],
+  summary: 'Create event',
+  description: 'Create a new event',
   body: {
     type: 'object',
     required: [
@@ -164,6 +166,8 @@ const createEventSchema = {
 
 const getEventSchema = {
   tags: ['events'],
+  summary: 'Get event',
+  description: 'Get a single event by id',
   params: {
     type: 'object',
     required: ['id'],
@@ -239,6 +243,8 @@ const getEventSchema = {
 
 const getAllEventsSchema = {
   tags: ['events'],
+  summary: 'Get all events',
+  description: 'Get all events',
   response: {
     200: responseSchema(200, null, {
       type: 'array',
@@ -310,6 +316,8 @@ const getAllEventsSchema = {
 
 const searchEventSchema = {
   tags: ['events'],
+  summary: 'Search events',
+  description: 'Search events by name',
   querystring: {
     type: 'object',
     required: ['q'],
@@ -388,6 +396,8 @@ const searchEventSchema = {
 
 const deleteEventSchema = {
   tags: ['events'],
+  summary: 'Delete event',
+  description: 'Delete an event by id',
   params: {
     type: 'object',
     required: ['id'],
@@ -410,6 +420,8 @@ const deleteEventSchema = {
 const uploadEventSchema = {
   tags: ['events'],
   consumes: ['multipart/form-data'],
+  summary: 'Upload events from a template',
+  description: 'Upload events from a template',
   body: {
     type: 'object',
     required: ['template'],
@@ -455,6 +467,8 @@ const uploadEventSchema = {
 
 const templateEventSchema = {
   tags: ['events'],
+  summary: 'Download event template',
+  description: 'Download event template',
   response: {
     200: responseSchema(200, false, {
       content: {
@@ -474,6 +488,8 @@ const templateEventSchema = {
 
 const updateEventSchema = {
   ...createEventSchema,
+  summary: 'Update event',
+  description: 'Update an event by id',
   params: {
     type: 'object',
     required: ['id'],

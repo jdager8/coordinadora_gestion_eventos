@@ -4,6 +4,8 @@ import ReportUseCase from '../../application/use_cases/report.usecase';
 
 import { GetReportDTO } from '../../domain/dto/reports.dto';
 
+import { reportSchema } from '../../domain/schemas/report.schema';
+
 class ReportRoutes {
   public prefix_route = '/reports';
 
@@ -20,6 +22,7 @@ class ReportRoutes {
     }>(
       '',
       {
+        schema: reportSchema.report,
         preValidation: [instance.authorize, instance.adminUser],
       },
       async (request, reply) => {
