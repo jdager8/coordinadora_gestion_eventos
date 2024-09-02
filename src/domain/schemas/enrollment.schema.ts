@@ -2,6 +2,8 @@ import { responseSchema } from './base.schema';
 
 const getAllSchema = {
   tags: ['enrollments'],
+  summary: 'List of enrollments',
+  description: 'List of enrollments',
   response: {
     200: responseSchema(200, false, {
       type: 'array',
@@ -9,8 +11,52 @@ const getAllSchema = {
         type: 'object',
         properties: {
           id: { type: 'number', default: 1 },
-          eventId: { type: 'number', default: 1 },
-          enrollmentId: { type: 'number', default: 1 },
+          event: {
+            type: 'object',
+            properties: {
+              id: { type: 'number', default: 1 },
+              name: { type: 'string' },
+              description: { type: 'string' },
+              location: { type: 'string' },
+              address: { type: 'string' },
+              coordinates: {
+                type: 'object',
+                properties: {
+                  latitude: { type: 'number' },
+                  longitude: { type: 'number' },
+                },
+              },
+              startDate: { type: 'string' },
+              endDate: { type: 'string' },
+              schedule: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'number', default: 1 },
+                    date: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+          user: {
+            type: 'object',
+            properties: {
+              id: { type: 'number', default: 1 },
+              username: { type: 'string' },
+              person: {
+                type: 'object',
+                properties: {
+                  id: { type: 'number', default: 1 },
+                  firstname: { type: 'string' },
+                  lastname: { type: 'string' },
+                  email: { type: 'string' },
+                  idNumber: { type: 'string' },
+                },
+              },
+            },
+          },
         },
       },
     }),
@@ -23,6 +69,8 @@ const getAllSchema = {
 
 const enrollSchema = {
   tags: ['enrollments'],
+  summary: 'Enroll',
+  description: 'Enroll to an event',
   body: {
     type: 'object',
     required: ['eventId', 'userId'],
@@ -86,6 +134,8 @@ const enrollSchema = {
 
 const unenrollSchema = {
   tags: ['enrollments'],
+  summary: 'Unenroll',
+  description: 'Unenroll from an event',
   query: {
     type: 'object',
     required: ['eventId', 'userId'],

@@ -2,6 +2,8 @@ import { responseSchema } from './base.schema';
 
 const findByEventIdAttendanceSchema = {
   tags: ['attendances'],
+  summary: 'List of attendances by event',
+  description: 'List of attendances by event',
   params: {
     type: 'object',
     required: ['id'],
@@ -74,6 +76,8 @@ const findByEventIdAttendanceSchema = {
 
 const findByUserIdAndEventIdAttendanceSchema = {
   tags: ['attendances'],
+  summary: 'List of attendances by user and event',
+  description: 'List of attendances by user and event',
   params: {
     type: 'object',
     required: ['eventId', 'userId'],
@@ -157,6 +161,8 @@ const findByUserIdAndEventIdAttendanceSchema = {
 
 const templateAttendanceSchema = {
   tags: ['attendances'],
+  summary: 'Download the attendance template',
+  description: 'Download the attendance template',
   response: {
     200: responseSchema(200, false, {
       content: {
@@ -176,6 +182,8 @@ const templateAttendanceSchema = {
 
 const registerAttendanceSchema = {
   tags: ['attendances'],
+  summary: 'Register attendance',
+  description: 'Register attendance',
   body: {
     type: 'object',
     required: ['eventScheduleId', 'eventEnrollmentId'],
@@ -210,6 +218,8 @@ const registerAttendanceSchema = {
 const uploadAttendanceSchema = {
   tags: ['attendances'],
   consumes: ['multipart/form-data'],
+  summary: 'Upload attendance',
+  description: 'Upload attendance',
   body: {
     type: 'object',
     required: ['template'],
