@@ -2,6 +2,31 @@ import { responseSchema } from './base.schema';
 
 const getReport = {
   tags: ['reports'],
+  summary: 'Get report',
+  description: 'Get report by-day-name or by-event-day-name',
+  body: {
+    required: ['report'],
+    type: 'object',
+    properties: {
+      report: {
+        type: 'string',
+        enum: ['report-by-day-name', 'report-by-event-day-name'],
+        errorMessage:
+          'The type must be report-by-day or report-by-event-day-name',
+      },
+      params: {
+        type: 'object',
+        properties: {
+          events: {
+            type: 'array',
+            items: {
+              type: 'number',
+            },
+          },
+        },
+      },
+    },
+  },
   response: {
     200: responseSchema(200, false, {
       type: 'array',
@@ -37,8 +62,8 @@ const getReport = {
   },
 };
 
-const userSchema = {
+const reportSchema = {
   report: getReport,
 };
 
-export { userSchema };
+export { reportSchema };

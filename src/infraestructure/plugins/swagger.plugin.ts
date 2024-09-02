@@ -13,7 +13,8 @@ function fastifySwaggerPlugin(
       openapi: {
         info: {
           title: 'Event Manager API',
-          description: 'API for Event Manager',
+          description:
+            'API for Event Manager. All the routes are protected except the auth routes. There are a bug in the swagger plugin that does not allow to set the security schema for the routes.',
           version: '0.1.0',
         },
         servers: [
